@@ -1,692 +1,219 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="/vite.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScholarSprint</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                </svg>
-                <span>📚ScholarSprint</span>
+    <title>ScholarSprint - AI-Powered College Counseling</title>
+    <link rel="stylesheet" href="/landing.css">
+    <script type="module" src="/firebase.js" defer></script>
+  </head>
+  <body>
+    <div id="landing-page">
+      <header class="landing-header">
+        <div class="nav-container">
+          <div class="logo">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+            <span>ScholarSprint</span>
+          </div>
+
+          <nav class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#about">About Us</a>
+            <button class="btn-login" id="navLoginBtn">Login</button>
+          </nav>
+
+          <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <svg width="24" height="24">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#about">About Us</a>
+        <button class="btn-login mobile" id="mobileLoginBtn">Login</button>
+      </div>
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-content">
+          <h1 class="hero-title">Your AI-Powered Path to College Success</h1>
+          <p class="hero-subtitle">Get personalized feedback, track your progress, and boost your chances.</p>
+
+          <div class="hero-buttons">
+            <button class="btn-primary btn-large" id="heroSignupBtn">Get Started Free</button>
+            <button class="btn-secondary btn-large" id="heroLoginBtn">Login</button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item"><div class="stat-number">10K+</div><div class="stat-label">Students Helped</div></div>
+            <div class="stat-item"><div class="stat-number">95%</div><div class="stat-label">Success Rate</div></div>
+            <div class="stat-item"><div class="stat-number">500+</div><div class="stat-label">Partner Schools</div></div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="floating-card card-1"><span>AI Analysis</span></div>
+          <div class="floating-card card-2"><span>Scholarships</span></div>
+          <div class="floating-card card-3"><span>Roadmap</span></div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="features" class="features">
+        <div class="section-container">
+          <h2 class="section-title">Everything You Need to Succeed</h2>
+          <p class="section-subtitle">Tools and guidance to maximize your admission chances</p>
+
+          <div class="features-grid">
+            <div class="feature-card">
+              <h3>AI-Powered Analysis</h3>
+              <p>Get intelligent feedback on your profile, essays, and application materials.</p>
             </div>
-        </header>
 
-        <nav class="tabs">
-            <input type="radio" name="tab" id="tab-home" checked>
-            <input type="radio" name="tab" id="tab-profile">
-            <input type="radio" name="tab" id="tab-roadmap">
-            <input type="radio" name="tab" id="tab-scholarships">
-            <input type="radio" name="tab" id="tab-settings">
-
-            <div class="tab-labels">
-                <label for="tab-home" class="tab-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                    <span>Home</span>
-                </label>
-                <label for="tab-profile" class="tab-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <span>Profile</span>
-                </label>
-                <label for="tab-roadmap" class="tab-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-                        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-                    </svg>
-                    <span>Roadmap</span>
-                </label>
-                <label for="tab-scholarships" class="tab-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="8" r="6"></circle>
-                        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
-                    </svg>
-                    <span>Scholarships</span>
-                </label>
-                <label for="tab-settings" class="tab-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                    <span>Settings</span>
-                </label>
+            <div class="feature-card">
+              <h3>Personalized Roadmap</h3>
+              <p>Follow a customized timeline with milestones tailored to your goals.</p>
             </div>
 
-            <div class="tab-content">
-                <section class="content-panel" id="home-content">
-                    <h1>Welcome to Your College Journey</h1>
-
-                    <div class="card profile-summary">
-                        <div class="card-header">
-                            <h2>Profile Summary</h2>
-                            <span class="badge">85% Complete</span>
-                        </div>
-                        <div class="profile-grid">
-                            <div class="profile-item">
-                                <div class="profile-icon">📚</div>
-                                <div>
-                                    <div class="profile-label">GPA</div>
-                                    <div class="profile-value">3.8 / 4.0</div>
-                                </div>
-                            </div>
-                            <div class="profile-item">
-                                <div class="profile-icon">✏️</div>
-                                <div>
-                                    <div class="profile-label">SAT Score</div>
-                                    <div class="profile-value">1450</div>
-                                </div>
-                            </div>
-                            <div class="profile-item">
-                                <div class="profile-icon">🎯</div>
-                                <div>
-                                    <div class="profile-label">Target Schools</div>
-                                    <div class="profile-value">12 Selected</div>
-                                </div>
-                            </div>
-                            <div class="profile-item">
-                                <div class="profile-icon">📅</div>
-                                <div>
-                                    <div class="profile-label">Application Season</div>
-                                    <div class="profile-value">Fall 2026</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Your Objectives</h2>
-                        <ul class="objective-list">
-                            <li class="objective-item completed">
-                                <span class="checkbox checked">✓</span>
-                                <span>Complete SAT/ACT Testing</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Finalize College List (12/15 schools selected)</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Draft Personal Statement</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Request Letters of Recommendation</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Submit Early Action Applications</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="card search-box">
-                        <h2>Search Colleges</h2>
-                        <div class="search-input-wrapper">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="m21 21-4.35-4.35"></path>
-                            </svg>
-                            <input type="text" placeholder="Search by name, location, major, or criteria..." class="search-input">
-                        </div>
-                        <div class="filter-tags">
-                            <span class="tag">Public Universities</span>
-                            <span class="tag">Computer Science</span>
-                            <span class="tag">East Coast</span>
-                            <span class="tag">+ Add Filter</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="content-panel" id="profile-content">
-                    <h1>Student Profile</h1>
-
-                    <div class="card">
-                        <h2>Academic Information</h2>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <label>Current GPA</label>
-                                <div class="info-value">3.85 / 4.0 (Unweighted)</div>
-                            </div>
-                            <div class="info-item">
-                                <label>Weighted GPA</label>
-                                <div class="info-value">4.2 / 5.0</div>
-                            </div>
-                            <div class="info-item">
-                                <label>Class Rank</label>
-                                <div class="info-value">15 / 320 (Top 5%)</div>
-                            </div>
-                            <div class="info-item">
-                                <label>AP Courses</label>
-                                <div class="info-value">8 Completed, 3 In Progress</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Standardized Test Scores</h2>
-                        <div class="test-scores">
-                            <div class="test-card">
-                                <h3>SAT</h3>
-                                <div class="score-display">1450</div>
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span>Math</span>
-                                        <span>730</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Reading & Writing</span>
-                                        <span>720</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="test-card">
-                                <h3>ACT</h3>
-                                <div class="score-display">32</div>
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span>English</span>
-                                        <span>34</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Math</span>
-                                        <span>31</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Reading</span>
-                                        <span>33</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Science</span>
-                                        <span>30</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Extracurricular Activities</h2>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <h4>Robotics Team Captain</h4>
-                                <p>Led team of 15 students, competed at state level</p>
-                                <span class="activity-years">9th - 12th Grade</span>
-                            </div>
-                            <div class="activity-item">
-                                <h4>Volunteer Tutor</h4>
-                                <p>Math and science tutoring for middle school students</p>
-                                <span class="activity-years">10th - 12th Grade</span>
-                            </div>
-                            <div class="activity-item">
-                                <h4>Student Government</h4>
-                                <p>Class Representative, Event Planning Committee</p>
-                                <span class="activity-years">11th - 12th Grade</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Academic Goals & Interests</h2>
-                        <div class="goals-section">
-                            <div class="goal-item">
-                                <strong>Intended Major:</strong> Computer Science
-                            </div>
-                            <div class="goal-item">
-                                <strong>Alternative Majors:</strong> Data Science, Software Engineering
-                            </div>
-                            <div class="goal-item">
-                                <strong>Career Goals:</strong> AI/ML Engineer, Tech Entrepreneur
-                            </div>
-                            <div class="goal-item">
-                                <strong>Preferred Location:</strong> East Coast, California
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card calculator-placeholder">
-                        <h2>Admissions Calculator</h2>
-                        <p class="placeholder-text">Calculate your admission chances based on your profile</p>
-                        <div class="calculator-preview">
-                            <div class="calc-item">
-                                <span>Academic Strength</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 85%"></div>
-                                </div>
-                                <span>85%</span>
-                            </div>
-                            <div class="calc-item">
-                                <span>Extracurricular Impact</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 78%"></div>
-                                </div>
-                                <span>78%</span>
-                            </div>
-                            <div class="calc-item">
-                                <span>Overall Match Score</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 82%"></div>
-                                </div>
-                                <span>82%</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="content-panel" id="roadmap-content">
-                    <h1>College Application Roadmap</h1>
-
-                    <div class="card">
-                        <h2>Your Timeline - Academic Year 2025-2026</h2>
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-marker completed"></div>
-                                <div class="timeline-content">
-                                    <h3>September 2025</h3>
-                                    <ul>
-                                        <li>Finalize college list</li>
-                                        <li>Begin Common App essay</li>
-                                        <li>Request teacher recommendations</li>
-                                    </ul>
-                                    <span class="status-badge completed">Completed</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker active"></div>
-                                <div class="timeline-content">
-                                    <h3>October 2025</h3>
-                                    <ul>
-                                        <li>Complete personal statement drafts</li>
-                                        <li>Take final SAT/ACT if needed</li>
-                                        <li>Begin supplemental essays</li>
-                                        <li>Attend college fairs</li>
-                                    </ul>
-                                    <span class="status-badge active">In Progress</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>November 2025</h3>
-                                    <ul>
-                                        <li>Submit Early Action/Early Decision applications</li>
-                                        <li>Complete all supplemental essays</li>
-                                        <li>Submit CSS Profile for financial aid</li>
-                                        <li>Continue working on Regular Decision apps</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>December 2025</h3>
-                                    <ul>
-                                        <li>Finalize Regular Decision applications</li>
-                                        <li>Complete FAFSA</li>
-                                        <li>Receive Early Action decisions</li>
-                                        <li>Schedule interviews if required</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>January 2026</h3>
-                                    <ul>
-                                        <li>Submit all Regular Decision applications</li>
-                                        <li>Send mid-year grade reports</li>
-                                        <li>Apply for local scholarships</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>February - March 2026</h3>
-                                    <ul>
-                                        <li>Continue scholarship applications</li>
-                                        <li>Visit accepted schools if possible</li>
-                                        <li>Maintain strong academic performance</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>April 2026</h3>
-                                    <ul>
-                                        <li>Receive Regular Decision notifications</li>
-                                        <li>Compare financial aid packages</li>
-                                        <li>Attend accepted student days</li>
-                                        <li>Make final college decision by May 1st</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>May - August 2026</h3>
-                                    <ul>
-                                        <li>Submit enrollment deposit</li>
-                                        <li>Complete housing applications</li>
-                                        <li>Register for orientation</li>
-                                        <li>Apply for summer programs</li>
-                                        <li>Prepare for college transition</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="content-panel" id="scholarships-content">
-                    <h1>Scholarship Opportunities</h1>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Matched Scholarships</h2>
-                            <span class="badge">24 Matches</span>
-                        </div>
-                        <p class="subtitle">Based on your profile, academic achievements, and interests</p>
-
-                        <div class="scholarship-list">
-                            <div class="scholarship-card high-match">
-                                <div class="scholarship-header">
-                                    <h3>National Merit Scholarship</h3>
-                                    <span class="match-badge high">95% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$2,500</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">October 15, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">PSAT/NMSQT Score, Application Essay</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Academic</span>
-                                    <span class="tag">National</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card high-match">
-                                <div class="scholarship-header">
-                                    <h3>Coca-Cola Scholars Program</h3>
-                                    <span class="match-badge high">88% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$20,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">October 31, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">3.0 GPA, Leadership, Community Service</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Leadership</span>
-                                    <span class="tag">Service</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card medium-match">
-                                <div class="scholarship-header">
-                                    <h3>Dell Scholars Program</h3>
-                                    <span class="match-badge medium">72% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$20,000 + Tech Package</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">December 1, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">2.4 GPA, Financial Need, College Readiness</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Technology</span>
-                                    <span class="tag">Need-Based</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card medium-match">
-                                <div class="scholarship-header">
-                                    <h3>Gates Scholarship</h3>
-                                    <span class="match-badge medium">68% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">Full Cost of Attendance</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">September 15, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">3.3 GPA, Pell Grant Eligible, Leadership</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Full Ride</span>
-                                    <span class="tag">Competitive</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card">
-                                <div class="scholarship-header">
-                                    <h3>Local Community Foundation Scholarship</h3>
-                                    <span class="match-badge">85% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$1,000 - $5,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">March 1, 2026</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">Local Resident, Essay, Recommendations</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Local</span>
-                                    <span class="tag">Community</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card">
-                                <div class="scholarship-header">
-                                    <h3>STEM Excellence Scholarship</h3>
-                                    <span class="match-badge">91% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$10,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">January 15, 2026</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">STEM Major, 3.5 GPA, Project Portfolio</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">STEM</span>
-                                    <span class="tag">Academic</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Application Tracker</h2>
-                        <div class="tracker-stats">
-                            <div class="stat-card">
-                                <div class="stat-number">8</div>
-                                <div class="stat-label">Applied</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">12</div>
-                                <div class="stat-label">In Progress</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">4</div>
-                                <div class="stat-label">Saved</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">$45K</div>
-                                <div class="stat-label">Potential Value</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="content-panel" id="settings-content">
-                    <h1>Settings</h1>
-
-                    <div class="card">
-                        <h2>Account Information</h2>
-                        <div class="settings-grid">
-                            <div class="setting-item">
-                                <label>Full Name</label>
-                                <input type="text" value="Alex Johnson" class="input-field">
-                            </div>
-                            <div class="setting-item">
-                                <label>Email Address</label>
-                                <input type="email" value="alex.johnson@email.com" class="input-field">
-                            </div>
-                            <div class="setting-item">
-                                <label>Phone Number</label>
-                                <input type="tel" value="(555) 123-4567" class="input-field">
-                            </div>
-                            <div class="setting-item">
-                                <label>High School</label>
-                                <input type="text" value="Springfield High School" class="input-field">
-                            </div>
-                            <div class="setting-item">
-                                <label>Graduation Year</label>
-                                <input type="text" value="2026" class="input-field">
-                            </div>
-                            <div class="setting-item">
-                                <label>Counselor Email</label>
-                                <input type="email" value="counselor@springfield.edu" class="input-field">
-                            </div>
-                        </div>
-                        <button class="btn-primary">Save Changes</button>
-                    </div>
-
-                    <div class="card">
-                        <h2>Notification Preferences</h2>
-                        <div class="toggle-list">
-                            <div class="toggle-item">
-                                <div>
-                                    <h4>Application Deadline Reminders</h4>
-                                    <p>Receive notifications before important deadlines</p>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <div>
-                                    <h4>Scholarship Matches</h4>
-                                    <p>Get notified when new scholarships match your profile</p>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <div>
-                                    <h4>College Updates</h4>
-                                    <p>News and updates from your saved colleges</p>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <div>
-                                    <h4>Weekly Progress Summary</h4>
-                                    <p>Weekly email with your application progress</p>
-                                </div>
-                                <label class="toggle">
-                                    <input type="checkbox" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Privacy & Security</h2>
-                        <div class="settings-actions">
-                            <button class="btn-secondary">Change Password</button>
-                            <button class="btn-secondary">Download My Data</button>
-                            <button class="btn-secondary">Privacy Settings</button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h2>Account Actions</h2>
-                        <div class="settings-actions">
-                            <button class="btn-secondary">Export Profile</button>
-                            <button class="btn-danger">Sign Out</button>
-                        </div>
-                    </div>
-                </section>
+            <div class="feature-card">
+              <h3>Scholarship Matching</h3>
+              <p>Find scholarships that match your profile and maximize financial aid.</p>
             </div>
-        </nav>
+
+            <div class="feature-card">
+              <h3>College Search</h3>
+              <p>Search colleges based on your stats, preferences, and acceptance chances.</p>
+            </div>
+
+            <div class="feature-card">
+              <h3>Profile Building</h3>
+              <p>Track academics, extracurriculars, test scores, and more.</p>
+            </div>
+
+            <div class="feature-card">
+              <h3>Progress Tracking</h3>
+              <p>Stay on top of deadlines with visual dashboards and reminders.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section id="how-it-works" class="how-it-works">
+        <div class="section-container">
+          <h2 class="section-title">How ScholarSprint Works</h2>
+          <p class="section-subtitle">Four simple steps</p>
+
+          <div class="steps">
+            <div class="step"><div class="step-number">1</div><h3>Create Your Profile</h3></div>
+            <div class="step"><div class="step-number">2</div><h3>Get AI Analysis</h3></div>
+            <div class="step"><div class="step-number">3</div><h3>Follow Your Roadmap</h3></div>
+            <div class="step"><div class="step-number">4</div><h3>Apply & Succeed</h3></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="about">
+        <div class="section-container">
+          <h2 class="section-title">About Us</h2>
+          <p class="section-subtitle">Built by students, for students</p>
+
+          <p class="about-text">
+            ScholarSprint was created by two passionate individuals who understand the college application struggle. 
+            We combined AI with proven counseling strategies to help every student access quality guidance.
+          </p>
+
+          <div class="founders">
+            <div class="founder-card"><h3>Co-Founder 1</h3><p>Role & Background</p></div>
+            <div class="founder-card"><h3>Co-Founder 2</h3><p>Role & Background</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="cta-content">
+          <h2>Ready to Start Your Journey?</h2>
+          <p>Join thousands of students achieving their college dreams.</p>
+          <button class="btn-primary btn-large" id="ctaSignupBtn">Get Started Today</button>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-logo">
+            <svg width="28" height="28"><path d="M2 10l10-5 10 5-10 5z"></path></svg>
+            <span>ScholarSprint</span>
+          </div>
+          <p>&copy; 2025 ScholarSprint. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
-</body>
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="modal">
+      <div class="modal-overlay" id="modalOverlay"></div>
+
+      <div class="modal-content">
+        <button class="modal-close" id="modalClose">✕</button>
+
+        <div class="auth-container" id="loginForm">
+          <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Login to access your portal</p>
+          </div>
+
+          <form class="auth-form">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="emailLogin" required>
+            </div>
+
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="passwordLogin" required>
+            </div>
+
+            <button class="btn-primary btn-full" id="submitLogin">Login</button>
+          </form>
+
+          <div class="auth-divider"><span>or</span></div>
+
+          <button class="btn-google">Continue with Google</button>
+
+          <div class="auth-switch">
+            Don’t have an account? <a id="switchToSignup">Sign up</a>
+          </div>
+        </div>
+
+        <div class="auth-container" id="signupForm" style="display:none;">
+          <div class="auth-header">
+            <h2>Create Account</h2>
+            <p>Start your journey</p>
+          </div>
+
+          <form class="auth-form">
+            <div class="form-group" ><label>Email</label><input id="email" required></div>
+            <div class="form-group" ><label>Password</label><input type="password" id="password" required></div>
+            <button class="btn-primary btn-full" id="submit">Create Account</button>
+          </form>
+
+          <div class="auth-divider"><span>or</span></div>
+          <button class="btn-google">Continue with Google</button>
+        </div>
+      </div>
+    </div>
+    <script src="/landing.js"></script>
+  </body>
 </html>
