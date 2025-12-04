@@ -2,7 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebas
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
@@ -35,6 +37,7 @@ submit.addEventListener("click", function (event) {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
+      alert(errorMessage);
       // ..
     });
 });
@@ -59,5 +62,28 @@ submitLogin.addEventListener("click", function (event) {
       const errorMessage = error.message;
       alert(errorMessage);
       // ..
+    });
+});
+
+const googleBtn = document.getElementById("btn-google");
+const provider = new GoogleAuthProvider();
+
+//NEED TO SAVE USERS INTO FIRESTORE
+googleBtn.addEventListener("click", function () {
+  alert(1);
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      const user = result.user;
+
+      window.location.href = "/home/home.html";
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      const email = error.customData.email;
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      alert(errorMessage);
     });
 });
