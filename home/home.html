@@ -77,14 +77,14 @@
                                 <div class="profile-icon">📚</div>
                                 <div>
                                     <div class="profile-label">GPA</div>
-                                    <div class="profile-value">3.8 / 4.0</div>
+                                    <div class="profile-value" id="displayUnweightedGPAHome"></div>
                                 </div>
                             </div>
                             <div class="profile-item">
                                 <div class="profile-icon">✏️</div>
                                 <div>
                                     <div class="profile-label">SAT Score</div>
-                                    <div class="profile-value">1450</div>
+                                    <div class="profile-value" id="displaySATHome"></div>
                                 </div>
                             </div>
                             <div class="profile-item">
@@ -98,7 +98,7 @@
                                 <div class="profile-icon">📅</div>
                                 <div>
                                     <div class="profile-label">Application Season</div>
-                                    <div class="profile-value">Fall 2026</div>
+                                    <div class="profile-value" id="applicationSeason"></div>
                                 </div>
                             </div>
                         </div>
@@ -132,11 +132,11 @@
 
                     <div class="card search-box">
                         <div class="search-input-wrapper">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.293 3.707l4 4a1 1 0 01-1.414 1.414l-4-4A6 6 0 012 8z" clip-rule="evenodd" />
-                        </svg>
-                        <input type="text" class="search-input" placeholder="Search by college name..." id="collegeSearch" />
-                        <button id="searchButton" class="search-button">Search</button>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.293 3.707l4 4a1 1 0 01-1.414 1.414l-4-4A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="text" class="search-input" placeholder="Search by college name..." id="collegeSearch" />
+                            <button id="searchButton" class="search-button">Search</button>
                         </div>
 
                         <div id="collegeResults" class="college-results"></div>
@@ -151,15 +151,15 @@
                         <div class="info-grid">
                             <div class="info-item">
                                 <label>Current GPA</label>
-                                <div class="info-value">3.85 / 4.0 (Unweighted)</div>
+                                <div class="info-value" id="displayUnweightedGPA"></div>
                             </div>
                             <div class="info-item">
                                 <label>Weighted GPA</label>
-                                <div class="info-value">4.2 / 5.0</div>
+                                <div class="info-value" id="displayWeightedGPA"></div>
                             </div>
                             <div class="info-item">
                                 <label>AP Courses</label>
-                                <div class="info-value">8 Completed, 3 In Progress</div>
+                                <div class="info-value" id="displayAP"></div>
                             </div>
                         </div>
                     </div>
@@ -169,61 +169,19 @@
                         <div class="test-scores">
                             <div class="test-card">
                                 <h3>SAT</h3>
-                                <div class="score-display">1450</div>
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span>Math</span>
-                                        <span>730</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Reading & Writing</span>
-                                        <span>720</span>
-                                    </div>
-                                </div>
+                                <div class="score-display" id="displaySAT"></div>
                             </div>
                             <div class="test-card">
                                 <h3>ACT</h3>
-                                <div class="score-display">32</div>
-                                <div class="score-breakdown">
-                                    <div class="score-item">
-                                        <span>English</span>
-                                        <span>34</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Math</span>
-                                        <span>31</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Reading</span>
-                                        <span>33</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span>Science</span>
-                                        <span>30</span>
-                                    </div>
-                                </div>
+                                <div class="score-display" id="displayACT"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card">
                         <h2>Extracurricular Activities</h2>
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <h4>Robotics Team Captain</h4>
-                                <p>Led team of 15 students, competed at state level</p>
-                                <span class="activity-years">9th - 12th Grade</span>
-                            </div>
-                            <div class="activity-item">
-                                <h4>Volunteer Tutor</h4>
-                                <p>Math and science tutoring for middle school students</p>
-                                <span class="activity-years">10th - 12th Grade</span>
-                            </div>
-                            <div class="activity-item">
-                                <h4>Student Government</h4>
-                                <p>Class Representative, Event Planning Committee</p>
-                                <span class="activity-years">11th - 12th Grade</span>
-                            </div>
+                        <div class="activity-list" id="activitiesList">
+                           Loading...
                         </div>
                     </div>
 
@@ -231,16 +189,16 @@
                         <h2>Academic Goals & Interests</h2>
                         <div class="goals-section">
                             <div class="goal-item">
-                                <strong>Intended Major:</strong> Computer Science
+                                <strong>Intended Major:</strong> <div id="intendedMajor"></div>
                             </div>
-                            <div class="goal-item">
-                                <strong>Alternative Majors:</strong> Data Science, Software Engineering
+                            <div class="goal-item" >
+                                <strong>Alternative Majors:</strong> <div id="alternativeMajor"></div>
                             </div>
-                            <div class="goal-item">
-                                <strong>Career Goals:</strong> AI/ML Engineer, Tech Entrepreneur
+                            <div class="goal-item" >
+                                <strong>Career Goals:</strong> <div id="careerGoals"></div>
                             </div>
-                            <div class="goal-item">
-                                <strong>Preferred Location:</strong> East Coast, California
+                            <div class="goal-item" >
+                                <strong>Preferred Location:</strong> <div id="preferredLocations"></div>
                             </div>
                         </div>
                     </div>
@@ -679,6 +637,6 @@
             </div>
         </nav>
     </div>
-    <script src="/home/main.js"></script>
+    <script type="module" src="/home/main.js"></script>
 </body>
 </html>

@@ -1,4 +1,42 @@
-document.addEventListener("DOMContentLoaded", function () {
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBmWOryytUc7lz3moV-6Ke9MzUvPdPWayI",
+  authDomain: "scholar-sprint-13dcc.firebaseapp.com",
+  projectId: "scholar-sprint-13dcc",
+  storageBucket: "scholar-sprint-13dcc.firebasestorage.app",
+  messagingSenderId: "427960359444",
+  appId: "1:427960359444:web:9ebb5c9d25b34361916501",
+};
+
+// Initialize Firebase0
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+document.addEventListener("DOMContentLoaded", () => {
+  let currentUser = null;
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      console.log("usernotfound");
+    } else {
+      currentUser = user;
+      console.log("Authenticated as:", user.uid);
+    }
+  });
+
   const form = document.getElementById("profileForm");
   const sections = document.querySelectorAll(".form-section");
   const nextBtn = document.getElementById("nextBtn");
@@ -18,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let activities = [];
   const totalSteps = sections.length;
 
-  totalStepsSpan.textContent = totalSteps;
+  if (totalStepsSpan) totalStepsSpan.textContent = totalSteps;
 
   function updateProgress() {
     const progress = ((currentStep + 1) / totalSteps) * 100;
@@ -32,9 +70,11 @@ document.addEventListener("DOMContentLoaded", function () {
       sections[index].classList.add("active");
     }
 
-    prevBtn.style.display = index > 0 ? "block" : "none";
-    nextBtn.style.display = index < totalSteps - 1 ? "block" : "none";
-    submitBtn.style.display = index === totalSteps - 1 ? "block" : "none";
+    if (prevBtn) prevBtn.style.display = index > 0 ? "block" : "none";
+    if (nextBtn)
+      nextBtn.style.display = index < totalSteps - 1 ? "block" : "none";
+    if (submitBtn)
+      submitBtn.style.display = index === totalSteps - 1 ? "block" : "none";
 
     updateProgress();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -86,76 +126,90 @@ document.addEventListener("DOMContentLoaded", function () {
       .join("");
   }
 
-  window.removeActivityHandler = function (index) {
+  window.removeActivityHandler = (index) => {
     removeActivity(index);
   };
 
-  nextBtn.addEventListener("click", function () {
+  nextBtn.addEventListener("click", () => {
     if (currentStep < totalSteps - 1) {
       currentStep++;
       showSection(currentStep);
     }
   });
 
-  prevBtn.addEventListener("click", function () {
+  prevBtn.addEventListener("click", () => {
     if (currentStep > 0) {
       currentStep--;
       showSection(currentStep);
     }
   });
 
-  addActivityBtn.addEventListener("click", function (e) {
+  addActivityBtn.addEventListener("click", (e) => {
     e.preventDefault();
     addActivity();
   });
 
-  activityNameInput.addEventListener("keypress", function (e) {
+  activityNameInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addActivity();
     }
   });
 
-  form.addEventListener("submit", function (e) {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      alert("notloggedin");
+      return;
+    }
+    const fd = new FormData(form);
 
-    const formData = new FormData(form);
-    const data = {
-      firstName: formData.get("firstName"),
-      lastName: formData.get("lastName"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      highSchool: formData.get("highSchool"),
-      graduationYear: formData.get("graduationYear"),
-      counselorEmail: formData.get("counselorEmail"),
-      unweightedGPA: formData.get("unweightedGPA"),
-      weightedGPA: formData.get("weightedGPA"),
-      satScore: formData.get("satScore"),
-      actScore: formData.get("actScore"),
-      apCourses: formData.get("apCourses"),
-      coursesMajor: formData.get("coursesMajor"),
-      classRank: formData.get("classRank"),
-      activities: activities,
-      leadershipRoles: formData.get("leadershipRoles"),
-      awards: formData.get("awards"),
-      volunteering: formData.get("volunteering"),
-      intendedMajor: formData.get("intendedMajor"),
-      alternativeMajors: formData.get("alternativeMajors"),
-      careerGoals: formData.get("careerGoals"),
-      preferredLocations: formData.get("preferredLocations"),
-      collegeType: formData.getAll("collegeType"),
-      financialNeed: formData.get("financialNeed"),
-      testScoreGoal: formData.get("testScoreGoal"),
+    const profileData = {
+      firstName: fd.get("firstName"),
+      lastName: fd.get("lastName"),
+      email: currentUser.email,
+      phone: fd.get("phone"),
+      highSchool: fd.get("highSchool"),
+      graduationYear: fd.get("graduationYear"),
+
+      academics: {
+        unweightedGPA: Number(fd.get("unweightedGPA")),
+        weightedGPA: Number(fd.get("weightedGPA")) || null,
+        satScore: Number(fd.get("satScore")) || null,
+        actScore: Number(fd.get("actScore")) || null,
+        apCourses: Number(fd.get("apCourses")),
+      },
+
+      activities,
+
+      extracurriculars: {
+        leadershipRoles: fd.get("leadershipRoles"),
+        awards: fd.get("awards"),
+        volunteering: fd.get("volunteering"),
+      },
+
+      goals: {
+        intendedMajor: fd.get("intendedMajor"),
+        alternativeMajors: fd.get("alternativeMajors"),
+        careerGoals: fd.get("careerGoals"),
+        preferredLocations: fd.get("preferredLocations"),
+        collegeType: fd.getAll("collegeType"),
+        financialNeed: fd.get("financialNeed"),
+        testScoreGoal: fd.get("testScoreGoal"),
+      },
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp(),
     };
 
-    sessionStorage.setItem("profileData", JSON.stringify(data));
-    console.log("Form Data:", data);
+    await setDoc(doc(db, "users", currentUser.uid), profileData, {
+      merge: true,
+    });
 
     successModal.classList.add("active");
   });
 
-  goToDashboardBtn.addEventListener("click", function () {
-    window.location.href = "/home/home.html";
+  goToDashboardBtn.addEventListener("click", () => {
+    window.location.href = "../home/home.html";
   });
 
   showSection(0);

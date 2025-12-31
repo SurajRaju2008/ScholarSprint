@@ -31,7 +31,7 @@ submit.addEventListener("click", function (event) {
     .then((userCredential) => {
       // Signed up
       const user = userCredential.user;
-      window.location.href = "/home/home.html";
+      window.location.href = "/authorize/auth.html";
       // ...
     })
     .catch((error) => {
@@ -77,7 +77,7 @@ googleBtn.addEventListener("click", function () {
       const token = credential.accessToken;
       const user = result.user;
 
-      window.location.href = "/home/home.html";
+      window.location.href = "/authorize/auth.html";
     })
     .catch((error) => {
       const errorCode = error.code;
