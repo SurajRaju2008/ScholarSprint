@@ -446,7 +446,7 @@ h4 {
     padding: 16px;
     background: var(--bg-secondary);
     border-radius: 8px;
-    display: flex;
+    display: inline-block;
 }
 
 .goal-item strong {

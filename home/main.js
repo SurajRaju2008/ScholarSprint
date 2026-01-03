@@ -140,26 +140,26 @@ searchButton.addEventListener("click", async () => {
       .slice(0, 7)
       .map(
         (college) => `
-    <div class="college-card">
-      <div class="college-card-header">
-        <h3>${college["school.name"]}</h3>
-        <span class="college-location">
-          ${college["school.city"]}, ${college["school.state"]}
-        </span>
-      </div>
+<div class="college-card">
+  <div class="college-header">
+    <h3>${college["school.name"]}</h3>
+    <span class="college-location">
+      ${college["school.city"]}, ${college["school.state"]}
+    </span>
+  </div>
 
-      <div class="college-card-body">
-        <p>
-          <strong>Average SAT:</strong>
-          ${college["latest.admissions.sat_scores.average.overall"] || "N/A"}
-        </p>
-        <p>
-          <strong>Tuition (OOS):</strong>
-          $${college["latest.cost.tuition.out_of_state"] || "N/A"}
-        </p>
-      </div>
-    </div>
-  `
+  <div class="college-info">
+    <p>
+      <strong>Average SAT:</strong>
+      ${college["latest.admissions.sat_scores.average.overall"] || "N/A"}
+    </p>
+    <p>
+      <strong>Tuition (OOS):</strong>
+      $${college["latest.cost.tuition.out_of_state"] || "N/A"}
+    </p>
+  </div>
+</div>
+`
       )
       .join("");
   } catch (error) {

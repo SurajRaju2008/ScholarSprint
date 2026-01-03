@@ -17,7 +17,7 @@ const firebaseConfig = {
   appId: "1:427960359444:web:9ebb5c9d25b34361916501",
 };
 
-// Initialize Firebase0
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -70,7 +70,6 @@ const provider = new GoogleAuthProvider();
 
 //NEED TO SAVE USERS INTO FIRESTORE
 googleBtn.addEventListener("click", function () {
-  alert(1);
   signInWithPopup(auth, provider)
     .then((result) => {
       const credential = GoogleAuthProvider.credentialFromResult(result);
