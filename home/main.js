@@ -9,6 +9,24 @@ import {
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+import { GoogleGenAI } from "@google/genai";
+import "dotenv/config";
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const disp = document.getElementById("asssistantFeedback");
+const analyzeButton = document.getElementById("analyzeButton");
+async function main() {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: "Explain how AI works in a few words",
+  });
+  disp.innerHTML = response.text;
+}
+
+analyzeButton.addEventListener("click", async () => {
+  main();
+});
+
 const firebaseConfig = {
   apiKey: "AIzaSyBmWOryytUc7lz3moV-6Ke9MzUvPdPWayI",
   authDomain: "scholar-sprint-13dcc.firebaseapp.com",
