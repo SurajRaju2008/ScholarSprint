@@ -71,15 +71,17 @@ exports.handler = async (event) => {
     );
 
     if (!geminiRes.ok) {
-      const errText = await geminiRes.text();
-      console.error("Gemini API error:", errText);
-      return {
-        statusCode: geminiRes.status,
-        headers,
-        body: JSON.stringify({
-          error: `Gemini API error: ${geminiRes.status}`,
-        }),
-      };
+      if (!geminiRes.ok) {
+        const errText = await geminiRes.text();
+        console.error("Gemini API error body:", errText); // add this
+        return {
+          statusCode: geminiRes.status,
+          headers,
+          body: JSON.stringify({
+            error: `Gemini API error: ${geminiRes.status} — ${errText}`,
+          }),
+        };
+      }
     }
 
     const data = await geminiRes.json();
