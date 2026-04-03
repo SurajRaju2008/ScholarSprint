@@ -5,43 +5,58 @@ exports.handler = async (event) => {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
   };
- 
+
   // Handle CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers, body: "" };
   }
- 
+
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
   }
- 
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: "Gemini API key not configured. Add GEMINI_API_KEY to Netlify environment variables." }),
+      body: JSON.stringify({
+        error:
+          "Gemini API key not configured. Add GEMINI_API_KEY to Netlify environment variables.",
+      }),
     };
   }
- 
+
   let body;
   try {
     body = JSON.parse(event.body);
   } catch {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid JSON body" }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Invalid JSON body" }),
+    };
   }
- 
+
   const { profile } = body;
   if (!profile) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing profile data" }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Missing profile data" }),
+    };
   }
- 
+
   // Build a rich prompt from the student's profile
   const prompt = buildPrompt(profile);
- 
+
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,29 +67,37 @@ exports.handler = async (event) => {
             maxOutputTokens: 1024,
           },
         }),
-      }
+      },
     );
- 
+
     if (!geminiRes.ok) {
       const errText = await geminiRes.text();
       console.error("Gemini API error:", errText);
       return {
         statusCode: geminiRes.status,
         headers,
-        body: JSON.stringify({ error: `Gemini API error: ${geminiRes.status}` }),
+        body: JSON.stringify({
+          error: `Gemini API error: ${geminiRes.status}`,
+        }),
       };
     }
- 
+
     const data = await geminiRes.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response generated.";
- 
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ??
+      "No response generated.";
+
     return { statusCode: 200, headers, body: JSON.stringify({ advice: text }) };
   } catch (err) {
     console.error("Function error:", err);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "Internal server error" }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Internal server error" }),
+    };
   }
 };
- 
+
 function buildPrompt(profile) {
   return `You are an expert college admissions counselor. Analyze this student's profile and give them 4–5 specific, actionable recommendations to improve their college application chances. Be honest, direct, and encouraging. Format your response with clear sections.
  
