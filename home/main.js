@@ -1,186 +1,320 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// main.js
+import { getUserProfile } from "./firebase-config.js";
 
-import { GoogleGenAI } from "@google/genai";
-import "dotenv/config";
-// The client gets the API key from the environment variable `GEMINI_API_KEY`.
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const disp = document.getElementById("asssistantFeedback");
-const analyzeButton = document.getElementById("analyzeButton");
-async function main() {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: "Explain how AI works in a few words",
-  });
-  disp.innerHTML = response.text;
-}
+// ─── Bootstrap ───────────────────────────────────────────────────────────────
 
-analyzeButton.addEventListener("click", async () => {
-  main();
-});
+let userProfile = null;
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBmWOryytUc7lz3moV-6Ke9MzUvPdPWayI",
-  authDomain: "scholar-sprint-13dcc.firebaseapp.com",
-  projectId: "scholar-sprint-13dcc",
-  storageBucket: "scholar-sprint-13dcc.firebasestorage.app",
-  messagingSenderId: "427960359444",
-  appId: "1:427960359444:web:9ebb5c9d25b34361916501",
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+(async () => {
+  userProfile = await getUserProfile();
+  populateProfile(userProfile);
+  initCollegeSearch();
+  initStrategyAssistant();
+})();
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await loadUserProfile(user.uid);
-  } else {
-    // Redirect to login if not signed in
-    window.location.href = "../index.html";
-  }
-});
+// ─── Profile Population ───────────────────────────────────────────────────────
 
-async function loadUserProfile(uid) {
-  try {
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
+function populateProfile(p) {
+  // Home tab
+  setText("displayUnweightedGPAHome", p.gpa ?? "—");
+  setText("displaySATHome", p.sat ?? "—");
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      renderProfile(data);
+  // Determine application season from graduation year
+  const season = p.graduationYear
+    ? `${Number(p.graduationYear) - 1}–${p.graduationYear}`
+    : "2025–2026";
+  setText("applicationSeason", season);
+
+  // Profile tab
+  setText("displayUnweightedGPA", p.gpa ?? "—");
+  setText("displayWeightedGPA", p.weightedGpa ?? "—");
+  setText("displayAP", p.apCourses != null ? `${p.apCourses} courses` : "—");
+  setText("displaySAT", p.sat ?? "—");
+  setText("displayACT", p.act ?? "—");
+  setText("intendedMajor", p.intendedMajor || "—");
+  setText("alternativeMajor", p.alternativeMajors || "—");
+  setText("careerGoals", p.careerGoals || "—");
+  setText("preferredLocations", p.preferredLocations || "—");
+
+  // Activities list
+  const actEl = document.getElementById("activitiesList");
+  if (actEl) {
+    const activities = Array.isArray(p.activities)
+      ? p.activities
+      : p.activities
+        ? p.activities.split(",").map((a) => a.trim())
+        : [];
+
+    if (activities.length > 0) {
+      actEl.innerHTML = activities
+        .map(
+          (act, i) => `
+          <div class="activity-item">
+            <span class="activity-number">${i + 1}</span>
+            <span class="activity-name">${escapeHtml(act)}</span>
+          </div>`,
+        )
+        .join("");
     } else {
-      console.log("No profile found");
+      actEl.innerHTML = `<p class="placeholder-text">No activities on file. Add them in your profile settings.</p>`;
     }
-  } catch (error) {
-    console.error("Error loading profile:", error);
   }
 }
 
-function renderProfile(data) {
-  // 1. ACADEMICS
-  document.getElementById("displayUnweightedGPAHome").textContent =
-    (data.academics?.unweightedGPA || "N/A") + " / 4.0";
-
-  document.getElementById("displayUnweightedGPA").textContent =
-    (data.academics?.unweightedGPA || "N/A") + " / 4.0";
-
-  document.getElementById("displayWeightedGPA").textContent = data.academics
-    ?.weightedGPA
-    ? data.academics.weightedGPA + " / 5.0"
-    : "N/A";
-
-  document.getElementById("displayAP").textContent = data.academics?.apCourses
-    ? data.academics.apCourses + " Courses"
-    : "0 Courses";
-
-  document.getElementById("displaySAT").textContent =
-    data.academics?.satScore || "N/A";
-
-  document.getElementById("displaySATHome").textContent =
-    data.academics?.satScore || "N/A";
-
-  document.getElementById("displayACT").textContent =
-    data.academics?.actScore || "N/A";
-
-  document.getElementById("applicationSeason").textContent =
-    "Fall " + data?.graduationYear || "N/A";
-
-  document.getElementById("intendedMajor").textContent =
-    data.goals?.intendedMajor || "N/A";
-
-  document.getElementById("alternativeMajor").textContent =
-    data.goals?.alternativeMajors || "N/A";
-
-  document.getElementById("careerGoals").textContent =
-    data.goals?.careerGoals || "N/A";
-
-  document.getElementById("preferredLocations").textContent =
-    data.goals?.preferredLocations || "N/A";
-
-  // 3. ACTIVITIES (Loop through the array)
-  const activitiesList = document.getElementById("activitiesList");
-
-  if (data.activities && data.activities.length > 0) {
-    // Create HTML for each activity
-    activitiesList.innerHTML = data.activities
-      .map(
-        (act) => `
-            <div class="activity-item">
-                <strong>${act.name}</strong>
-                ${act.role ? `<span>   -   ${act.role}</span>` : ""}
-            </div>
-        `
-      )
-      .join("");
-  } else {
-    activitiesList.innerHTML = "<div> No activities listed.</div>";
-  }
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
-// COLLEGE SEARCH
-const collegeApiKey = "htvAuTDbmvwuse6ta05sdV9qrHkSxR9VEXeMfHYN";
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 
-const searchButton = document.getElementById("searchButton");
-const searchInput = document.getElementById("collegeSearch");
-const resultsDiv = document.getElementById("collegeResults");
+// ─── Application Strategy Assistant ──────────────────────────────────────────
 
-searchButton.addEventListener("click", async () => {
-  const query = searchInput.value.trim();
-  if (!query) {
-    resultsDiv.innerHTML = "<p> Please enter a college name!</p>";
-    return;
-  }
+function initStrategyAssistant() {
+  const btn = document.getElementById("analyzeButton");
+  const output = document.getElementById("asssistantFeedback"); // note: 3 s's in HTML
 
-  resultsDiv.innerHTML = "<p> Loading...</p>";
+  if (!btn || !output) return;
 
-  try {
-    const response = await fetch(
-      `https://api.data.gov/ed/collegescorecard/v1/schools.json?school.name=${encodeURIComponent(
-        query
-      )}&api_key=${collegeApiKey}&fields=school.name,school.city,school.state,latest.admissions.sat_scores.average.overall,latest.cost.tuition.out_of_state`
-    );
-    const data = await response.json();
+  // Clear the initial "Loading..." text
+  output.textContent =
+    "Click Analyze to get personalized advice based on your profile.";
+  output.className = "assistant-placeholder";
 
-    if (!data.results || data.results.length === 0) {
-      resultsDiv.innerHTML = "<p>No colleges found.</p>";
+  btn.addEventListener("click", async () => {
+    if (!userProfile) {
+      output.innerHTML = `<p class="error-text">Profile not loaded yet. Please wait a moment and try again.</p>`;
       return;
     }
 
-    resultsDiv.innerHTML = data.results
-      .slice(0, 7)
-      .map(
-        (college) => `
-<div class="college-card">
-  <div class="college-header">
-    <h3>${college["school.name"]}</h3>
-    <span class="college-location">
-      ${college["school.city"]}, ${college["school.state"]}
-    </span>
-  </div>
+    btn.disabled = true;
+    btn.textContent = "Analyzing...";
+    output.className = "assistant-loading";
+    output.innerHTML = `
+      <div class="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <p>Analyzing your profile with AI…</p>`;
 
-  <div class="college-info">
-    <p>
-      <strong>Average SAT:</strong>
-      ${college["latest.admissions.sat_scores.average.overall"] || "N/A"}
-    </p>
-    <p>
-      <strong>Tuition (OOS):</strong>
-      $${college["latest.cost.tuition.out_of_state"] || "N/A"}
-    </p>
-  </div>
-</div>
-`
-      )
-      .join("");
-  } catch (error) {
-    resultsDiv.innerHTML = `<p>Error fetching data: ${error.message}</p>`;
+    try {
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile: userProfile }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || `Server error ${res.status}`);
+      }
+
+      output.className = "assistant-result";
+      output.innerHTML = formatAdvice(data.advice);
+    } catch (err) {
+      console.error("Gemini error:", err);
+      output.className = "assistant-error";
+      output.innerHTML = `
+        <p class="error-text">⚠️ Could not load advice: ${escapeHtml(err.message)}</p>
+        <p class="error-subtext">Check that your GEMINI_API_KEY is set in Netlify environment variables.</p>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Analyze";
+    }
+  });
+}
+
+/**
+ * Converts the Gemini markdown-like response into clean HTML.
+ * Handles **bold**, numbered lists, and section headers.
+ */
+function formatAdvice(text) {
+  const lines = text.split("\n").filter((l) => l.trim() !== "");
+  let html = "";
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("## ") || trimmed.startsWith("# ")) {
+      html += `<h3 class="advice-heading">${escapeHtml(trimmed.replace(/^#+\s*/, ""))}</h3>`;
+    } else if (/^\*\*(.+)\*\*$/.test(trimmed)) {
+      // Full line is bold (section title)
+      html += `<h4 class="advice-subheading">${escapeHtml(trimmed.replace(/\*\*/g, ""))}</h4>`;
+    } else if (/^\d+\.\s/.test(trimmed)) {
+      // Numbered list item
+      const content = trimmed.replace(/^\d+\.\s*/, "");
+      html += `<p class="advice-item">→ ${inlineBold(content)}</p>`;
+    } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+      const content = trimmed.replace(/^[-*]\s*/, "");
+      html += `<p class="advice-bullet">• ${inlineBold(content)}</p>`;
+    } else {
+      html += `<p class="advice-para">${inlineBold(trimmed)}</p>`;
+    }
   }
-});
+
+  return html;
+}
+
+function inlineBold(text) {
+  return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+}
+
+// ─── College Search ───────────────────────────────────────────────────────────
+
+function initCollegeSearch() {
+  const btn = document.getElementById("searchButton");
+  const input = document.getElementById("collegeSearch");
+  const results = document.getElementById("collegeResults");
+
+  if (!btn || !input || !results) return;
+
+  const doSearch = () => {
+    const q = input.value.trim();
+    if (q.length < 2) {
+      results.innerHTML = `<p class="search-hint">Enter at least 2 characters to search.</p>`;
+      return;
+    }
+    fetchColleges(q, results);
+  };
+
+  btn.addEventListener("click", doSearch);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") doSearch();
+  });
+}
+
+async function fetchColleges(query, container) {
+  container.innerHTML = `
+    <div class="search-loading">
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+      <p>Searching colleges…</p>
+    </div>`;
+
+  try {
+    const res = await fetch(
+      `/api/college-search?q=${encodeURIComponent(query)}`,
+    );
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+
+    if (!data.results || data.results.length === 0) {
+      container.innerHTML = `<p class="search-no-results">No colleges found for "<strong>${escapeHtml(query)}</strong>". Try a different name.</p>`;
+      return;
+    }
+
+    container.innerHTML = data.results.map(renderCollegeCard).join("");
+  } catch (err) {
+    console.error("College search error:", err);
+    container.innerHTML = `
+      <p class="error-text">⚠️ Search failed: ${escapeHtml(err.message)}</p>
+      <p class="error-subtext">Make sure COLLEGE_SCORECARD_API_KEY is set in your Netlify environment variables.</p>`;
+  }
+}
+
+function renderCollegeCard(school) {
+  const admitRate =
+    school.admissionRate != null
+      ? `${Math.round(school.admissionRate * 100)}%`
+      : "N/A";
+
+  const tuition =
+    school.outOfStateTuition != null
+      ? `$${school.outOfStateTuition.toLocaleString()}`
+      : school.inStateTuition != null
+        ? `$${school.inStateTuition.toLocaleString()} (in-state)`
+        : "N/A";
+
+  const satInfo =
+    school.satAvg != null ? `${Math.round(school.satAvg)}` : "N/A";
+  const actInfo = school.actMidpoint != null ? `${school.actMidpoint}` : "N/A";
+  const size =
+    school.studentSize != null ? school.studentSize.toLocaleString() : "N/A";
+
+  const location =
+    [school.city, school.state].filter(Boolean).join(", ") || "Unknown";
+
+  // Determine selectivity badge
+  let selectivityBadge = "";
+  if (school.admissionRate != null) {
+    const rate = school.admissionRate;
+    if (rate < 0.1)
+      selectivityBadge = `<span class="selectivity-badge reach">Highly Selective</span>`;
+    else if (rate < 0.25)
+      selectivityBadge = `<span class="selectivity-badge reach">Very Selective</span>`;
+    else if (rate < 0.5)
+      selectivityBadge = `<span class="selectivity-badge match">Selective</span>`;
+    else
+      selectivityBadge = `<span class="selectivity-badge safety">Less Selective</span>`;
+  }
+
+  // Compare to user's stats if available
+  const matchIndicator = getMatchIndicator(school);
+
+  const websiteLink = school.url
+    ? `<a href="https://${school.url}" target="_blank" rel="noopener" class="college-link">Visit Website →</a>`
+    : "";
+
+  return `
+    <div class="college-card">
+      <div class="college-card-header">
+        <div>
+          <h3 class="college-name">${escapeHtml(school.name)}</h3>
+          <p class="college-location">📍 ${escapeHtml(location)} · ${escapeHtml(school.ownership)}</p>
+        </div>
+        <div class="college-badges">
+          ${selectivityBadge}
+          ${matchIndicator}
+        </div>
+      </div>
+      <div class="college-stats-grid">
+        <div class="college-stat">
+          <span class="stat-label">Acceptance Rate</span>
+          <span class="stat-value ${getAdmitClass(school.admissionRate)}">${admitRate}</span>
+        </div>
+        <div class="college-stat">
+          <span class="stat-label">Avg SAT</span>
+          <span class="stat-value">${satInfo}</span>
+        </div>
+        <div class="college-stat">
+          <span class="stat-label">Avg ACT</span>
+          <span class="stat-value">${actInfo}</span>
+        </div>
+        <div class="college-stat">
+          <span class="stat-label">Tuition (OOS)</span>
+          <span class="stat-value">${tuition}</span>
+        </div>
+        <div class="college-stat">
+          <span class="stat-label">Undergrads</span>
+          <span class="stat-value">${size}</span>
+        </div>
+      </div>
+      ${websiteLink}
+    </div>`;
+}
+
+function getAdmitClass(rate) {
+  if (rate == null) return "";
+  if (rate < 0.15) return "stat-value-red";
+  if (rate < 0.4) return "stat-value-yellow";
+  return "stat-value-green";
+}
+
+/**
+ * Compares the college's SAT average to the user's SAT score
+ * to show a quick Reach / Match / Safety tag.
+ */
+function getMatchIndicator(school) {
+  if (!userProfile?.sat || !school.satAvg) return "";
+
+  const userSAT = Number(userProfile.sat);
+  const schoolSAT = Number(school.satAvg);
+  const diff = userSAT - schoolSAT;
+
+  if (diff >= 100)
+    return `<span class="selectivity-badge safety">Safety</span>`;
+  if (diff >= -60) return `<span class="selectivity-badge match">Match</span>`;
+  return `<span class="selectivity-badge reach">Reach</span>`;
+}
