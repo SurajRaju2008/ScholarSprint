@@ -115,10 +115,10 @@ STUDENT PROFILE:
 - Graduation Year: ${profile.graduationYear || "2026"}
 
 Please provide:
-1. **Overall Profile Strength** — A brief honest assessment (2–3 sentences)
-2. **Top Recommendations** — 4–5 specific things this student can do RIGHT NOW to improve their application
-3. **College List Strategy** — Based on their stats, what tier of schools should they target (safety/match/reach)?
-4. **One Key Strength to Highlight** — What should they emphasize in their essays/interviews?
+1. **Overall Profile Strength** — A brief honest assessment (1-2 sentences)
+2. **Top Recommendations** — 4–5 specific things this student can do RIGHT NOW to improve their application (bullet points)
+3. **College List Strategy** — Based on their stats, what tier of schools should they target (safety/match/reach)?(1-2 sentences)
+4. **One Key Strength to Highlight** — What should they emphasize in their essays/interviews?(1-2 sentences)
 
 Keep the tone warm, expert, and motivating. Be specific — avoid generic advice.`;
 }

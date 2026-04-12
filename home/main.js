@@ -127,34 +127,94 @@ function initStrategyAssistant() {
 }
 
 /**
- * Converts the Gemini markdown-like response into clean HTML.
- * Handles **bold**, numbered lists, and section headers.
+ * Parses the AI response into structured section cards.
+ * Detects the 4 sections from the prompt and renders each as its own card.
  */
 function formatAdvice(text) {
-  const lines = text.split("\n").filter((l) => l.trim() !== "");
-  let html = "";
+  // Map section keywords to icons and labels
+  const sectionDefs = [
+    { key: "overall profile strength", icon: "📊", label: "Profile Strength" },
+    { key: "top recommendations", icon: "🎯", label: "Top Recommendations" },
+    {
+      key: "college list strategy",
+      icon: "🏫",
+      label: "College List Strategy",
+    },
+    { key: "one key strength", icon: "⭐", label: "Key Strength to Highlight" },
+  ];
+
+  // Split the raw text into sections by detecting numbered headers or bold titles
+  const sections = parseSections(text, sectionDefs);
+
+  if (sections.length === 0) {
+    // Fallback: just render as plain paragraphs
+    return text
+      .split("\n")
+      .filter((l) => l.trim())
+      .map(
+        (l) =>
+          `<div class="advice-card"><p class="advice-card-body">${inlineBold(l.trim())}</p></div>`,
+      )
+      .join("");
+  }
+
+  return sections
+    .map(({ icon, label, lines }) => {
+      const bodyHtml = lines
+        .map((line) => {
+          const trimmed = line.trim();
+          if (!trimmed) return "";
+          if (
+            trimmed.startsWith("- ") ||
+            trimmed.startsWith("* ") ||
+            /^\d+\.\s/.test(trimmed)
+          ) {
+            const content = trimmed.replace(/^[-*\d]+\.?\s*/, "");
+            return `<div class="advice-bullet-item">${inlineBold(content)}</div>`;
+          }
+          return `<p class="advice-card-body">${inlineBold(trimmed)}</p>`;
+        })
+        .join("");
+
+      return `
+      <div class="advice-card">
+        <div class="advice-card-title">
+          <span class="advice-icon">${icon}</span>
+          ${escapeHtml(label)}
+        </div>
+        ${bodyHtml}
+      </div>`;
+    })
+    .join("");
+}
+
+/**
+ * Splits raw text into sections matching the prompt structure.
+ */
+function parseSections(text, defs) {
+  const lines = text.split("\n");
+  const sections = [];
+  let current = null;
 
   for (const line of lines) {
-    const trimmed = line.trim();
+    const stripped = line
+      .replace(/\*\*/g, "")
+      .replace(/^#+\s*/, "")
+      .replace(/^\d+\.\s*/, "")
+      .toLowerCase()
+      .trim();
 
-    if (trimmed.startsWith("## ") || trimmed.startsWith("# ")) {
-      html += `<h3 class="advice-heading">${escapeHtml(trimmed.replace(/^#+\s*/, ""))}</h3>`;
-    } else if (/^\*\*(.+)\*\*$/.test(trimmed)) {
-      // Full line is bold (section title)
-      html += `<h4 class="advice-subheading">${escapeHtml(trimmed.replace(/\*\*/g, ""))}</h4>`;
-    } else if (/^\d+\.\s/.test(trimmed)) {
-      // Numbered list item
-      const content = trimmed.replace(/^\d+\.\s*/, "");
-      html += `<p class="advice-item">→ ${inlineBold(content)}</p>`;
-    } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-      const content = trimmed.replace(/^[-*]\s*/, "");
-      html += `<p class="advice-bullet">• ${inlineBold(content)}</p>`;
-    } else {
-      html += `<p class="advice-para">${inlineBold(trimmed)}</p>`;
+    const matched = defs.find((d) => stripped.includes(d.key));
+    if (matched) {
+      if (current) sections.push(current);
+      current = { icon: matched.icon, label: matched.label, lines: [] };
+    } else if (current && line.trim()) {
+      current.lines.push(line);
     }
   }
 
-  return html;
+  if (current) sections.push(current);
+  return sections;
 }
 
 function inlineBold(text) {
