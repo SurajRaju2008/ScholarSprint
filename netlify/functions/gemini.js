@@ -11,7 +11,11 @@ exports.handler = async (event) => {
   }
 
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ error: "Method not allowed" }),
+    };
   }
 
   const apiKey = process.env.GROQ_API_KEY;
@@ -19,7 +23,10 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: "Groq API key not configured. Add GROQ_API_KEY to Netlify environment variables." }),
+      body: JSON.stringify({
+        error:
+          "Groq API key not configured. Add GROQ_API_KEY to Netlify environment variables.",
+      }),
     };
   }
 
@@ -27,30 +34,41 @@ exports.handler = async (event) => {
   try {
     body = JSON.parse(event.body);
   } catch {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid JSON body" }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Invalid JSON body" }),
+    };
   }
 
   const { profile } = body;
   if (!profile) {
-    return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing profile data" }) };
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Missing profile data" }),
+    };
   }
 
   const prompt = buildPrompt(profile);
 
   try {
-    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
+    const groqRes = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 1024,
+          temperature: 0.7,
+        }),
       },
-      body: JSON.stringify({
-        model: "llama3-8b-8192",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 1024,
-        temperature: 0.7,
-      }),
-    });
+    );
 
     if (!groqRes.ok) {
       const errText = await groqRes.text();
@@ -58,17 +76,24 @@ exports.handler = async (event) => {
       return {
         statusCode: groqRes.status,
         headers,
-        body: JSON.stringify({ error: `Groq API error: ${groqRes.status} — ${errText}` }),
+        body: JSON.stringify({
+          error: `Groq API error: ${groqRes.status} — ${errText}`,
+        }),
       };
     }
 
     const data = await groqRes.json();
-    const text = data.choices?.[0]?.message?.content ?? "No response generated.";
+    const text =
+      data.choices?.[0]?.message?.content ?? "No response generated.";
 
     return { statusCode: 200, headers, body: JSON.stringify({ advice: text }) };
   } catch (err) {
     console.error("Function error:", err);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: "Internal server error" }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Internal server error" }),
+    };
   }
 };
 
