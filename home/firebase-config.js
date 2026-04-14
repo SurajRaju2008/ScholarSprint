@@ -1,19 +1,14 @@
 // firebase-config.js
-// Replace these values with your own Firebase project config.
-// Find them in: Firebase Console → Project Settings → Your Apps → SDK Setup
-// These are PUBLIC keys (safe to expose) — Firebase security comes from your
-// Firestore Security Rules, NOT from hiding these values.
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   getFirestore,
   doc,
   getDoc,
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBmWOryytUc7lz3moV-6Ke9MzUvPdPWayI",
@@ -29,26 +24,53 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 /**
- * Fetches the current authenticated user's profile from Firestore.
- * Expected Firestore structure:
- *   users/{uid}/profile (document) with fields like:
- *     gpa, weightedGpa, sat, act, apCourses, activities[],
- *     intendedMajor, alternativeMajors, careerGoals,
- *     preferredLocations, graduationYear, name
- *
- * Returns a profile object, or a default demo profile if not signed in.
+ * Fetches the current user's profile from Firestore.
+ * Data is saved by the profile form at: users/{uid}  (top-level doc)
+ * with nested fields: academics.unweightedGPA, goals.intendedMajor, etc.
  */
 export async function getUserProfile() {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const profileRef = doc(db, "users", user.uid, "profile", "data");
-          const snap = await getDoc(profileRef);
+          // Read from users/{uid} — this is where your profile form saves to
+          const userRef = doc(db, "users", user.uid);
+          const snap = await getDoc(userRef);
+
           if (snap.exists()) {
-            resolve({ uid: user.uid, email: user.email, ...snap.data() });
+            const data = snap.data();
+
+            // Map Firestore structure → flat profile object for main.js
+            const profile = {
+              uid: user.uid,
+              email: user.email,
+              name:
+                `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
+                user.displayName ||
+                "Student",
+              gpa: data.academics?.unweightedGPA ?? null,
+              weightedGpa: data.academics?.weightedGPA ?? null,
+              sat: data.academics?.satScore ?? null,
+              act: data.academics?.actScore ?? null,
+              apCourses: data.academics?.apCourses ?? null,
+              // activities is an array of {name, role} objects — flatten to strings
+              activities: (data.activities || []).map((a) =>
+                a.role ? `${a.name} (${a.role})` : a.name,
+              ),
+              intendedMajor: data.goals?.intendedMajor ?? null,
+              alternativeMajors: data.goals?.alternativeMajors ?? null,
+              careerGoals: data.goals?.careerGoals ?? null,
+              preferredLocations: data.goals?.preferredLocations ?? null,
+              graduationYear: data.graduationYear ?? null,
+              highSchool: data.highSchool ?? null,
+            };
+
+            resolve(profile);
           } else {
-            // Profile doc doesn't exist yet — return minimal profile
+            // User is logged in but hasn't filled out profile form yet
+            console.warn(
+              "No profile found for user. Have they completed the profile form?",
+            );
             resolve({
               uid: user.uid,
               email: user.email,
@@ -56,11 +78,11 @@ export async function getUserProfile() {
             });
           }
         } catch (err) {
-          console.warn("Firestore read failed, using demo profile:", err);
+          console.error("Firestore read error:", err);
           resolve(getDemoProfile());
         }
       } else {
-        // Not signed in — use demo data so the app still works during development
+        // Not logged in — redirect to login or use demo
         console.info("No user signed in. Using demo profile.");
         resolve(getDemoProfile());
       }
