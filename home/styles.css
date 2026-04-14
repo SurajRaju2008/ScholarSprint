@@ -357,7 +357,7 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
 .search-button {
     padding: 10px 20px;
-    background: var(--primary);
+    background: var(--primary-light);
     color: white;
     border: none;
     border-radius: 6px;
