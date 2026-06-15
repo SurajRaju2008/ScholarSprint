@@ -170,6 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
       email: currentUser.email,
       phone: fd.get("phone"),
       highSchool: fd.get("highSchool"),
+      homeState: fd.get("homeState"),
       graduationYear: fd.get("graduationYear"),
 
       academics: {

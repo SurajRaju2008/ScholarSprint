@@ -1,5 +1,6 @@
 // main.js
 import { getUserProfile } from "./firebase-config.js";
+import { initCollegeMatch } from "./college-match.js";
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 
@@ -10,6 +11,7 @@ let userProfile = null;
   populateProfile(userProfile);
   initCollegeSearch();
   initStrategyAssistant();
+  initCollegeMatch(userProfile);
 })();
 
 // ─── Profile Population ───────────────────────────────────────────────────────

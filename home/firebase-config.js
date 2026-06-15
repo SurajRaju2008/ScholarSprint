@@ -61,6 +61,7 @@ export async function getUserProfile() {
               alternativeMajors: data.goals?.alternativeMajors ?? null,
               careerGoals: data.goals?.careerGoals ?? null,
               preferredLocations: data.goals?.preferredLocations ?? null,
+              homeState: data.homeState ?? null,
               graduationYear: data.graduationYear ?? null,
               highSchool: data.highSchool ?? null,
             };
@@ -88,4 +89,25 @@ export async function getUserProfile() {
       }
     });
   });
+}
+
+function getDemoProfile() {
+  return {
+    name: "Alex Johnson",
+    gpa: 3.7,
+    weightedGpa: 4.1,
+    sat: 1380,
+    act: 30,
+    apCourses: 6,
+    intendedMajor: "Computer Science",
+    preferredLocations: "Midwest, Northeast",
+    homeState: "IL",
+    graduationYear: "2026",
+    highSchool: "Springfield High School",
+    activities: [
+      "Robotics Club (President)",
+      "Varsity Soccer",
+      "National Honor Society",
+    ],
+  };
 }

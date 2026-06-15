@@ -21,6 +21,7 @@
         <nav class="tabs">
             <input type="radio" name="tab" id="tab-home" checked>
             <input type="radio" name="tab" id="tab-profile">
+            <input type="radio" name="tab" id="tab-college-match">
             <input type="radio" name="tab" id="tab-roadmap">
             <input type="radio" name="tab" id="tab-scholarships">
             <input type="radio" name="tab" id="tab-settings">
@@ -39,6 +40,13 @@
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                     <span>Profile</span>
+                </label>
+                <label for="tab-college-match" class="tab-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                    <span>College Match</span>
                 </label>
                 <label for="tab-roadmap" class="tab-label">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -129,6 +137,12 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="card college-match-cta">
+                        <h2>Find Colleges That Fit You</h2>
+                        <p class="college-match-cta-text">Filter by cost, size, location, selectivity, and student preferences to generate a personalized list of colleges.</p>
+                        <button type="button" class="btn-primary" data-goto-tab="tab-college-match">Open College Match</button>
+                    </div>
+
                     <div class="card search-box">
                         <span>Application Strategy Assistant</span>
                         <div id="asssistantFeedback">Loading...</div>
@@ -210,32 +224,85 @@
                     </div>
 
                     <div class="card calculator-placeholder">
-                        <h2>Admissions Calculator</h2>
-                        <p class="placeholder-text">Calculate your admission chances based on your profile</p>
-                        <div class="calculator-preview">
-                            <div class="calc-item">
-                                <span>Academic Strength</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 85%"></div>
-                                </div>
-                                <span>85%</span>
+                        <h2>Find Colleges That Fit You</h2>
+                        <p class="placeholder-text">Filter by cost, size, location, selectivity, and student preferences to generate a personalized list of colleges.</p>
+                        <button type="button" class="btn-primary btn-on-gradient" data-goto-tab="tab-college-match">Open College Match</button>
+                    </div>
+                </section>
+
+                <section class="content-panel" id="college-match-content">
+                    <h1>Find Colleges That Fit You</h1>
+                    <p class="page-subtitle">Filter by cost, size, location, selectivity, and student preferences to generate a personalized list of colleges.</p>
+
+                    <div class="card">
+                        <h2>Your Filters</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label for="filterCollegeType">College type</label>
+                                <select id="filterCollegeType" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="public">Public</option>
+                                    <option value="private">Private</option>
+                                    <option value="community">Community College</option>
+                                </select>
                             </div>
-                            <div class="calc-item">
-                                <span>Extracurricular Impact</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 78%"></div>
-                                </div>
-                                <span>78%</span>
+                            <div class="filter-group">
+                                <label for="filterLocation">Location preference</label>
+                                <select id="filterLocation" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="in-state">In-state</option>
+                                    <option value="out-of-state">Out-of-state</option>
+                                    <option value="Midwest">Midwest</option>
+                                    <option value="Northeast">Northeast</option>
+                                    <option value="South">South</option>
+                                    <option value="West Coast">West Coast</option>
+                                    <option value="urban">Urban</option>
+                                    <option value="suburban">Suburban</option>
+                                    <option value="rural">Rural</option>
+                                </select>
                             </div>
-                            <div class="calc-item">
-                                <span>Overall Match Score</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 82%"></div>
-                                </div>
-                                <span>82%</span>
+                            <div class="filter-group">
+                                <label for="filterTuition">Tuition / cost range</label>
+                                <select id="filterTuition" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="under-15k">Under $15,000/year</option>
+                                    <option value="15-30k">$15,000–$30,000/year</option>
+                                    <option value="30-50k">$30,000–$50,000/year</option>
+                                    <option value="50k-plus">$50,000+/year</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterSize">School size</label>
+                                <select id="filterSize" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="small">Small: under 5,000 students</option>
+                                    <option value="medium">Medium: 5,000–15,000 students</option>
+                                    <option value="large">Large: 15,000+ students</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterSelectivity">Selectivity / admissions category</label>
+                                <select id="filterSelectivity" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="Safety">Safety</option>
+                                    <option value="Target/Match">Target / Match</option>
+                                    <option value="Reach">Reach</option>
+                                    <option value="Highly Selective">Highly Selective</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterTestPolicy">Test score policy</label>
+                                <select id="filterTestPolicy" class="filter-select">
+                                    <option value="no-preference">No preference</option>
+                                    <option value="test-optional">Test optional</option>
+                                    <option value="test-required">Test required</option>
+                                </select>
                             </div>
                         </div>
+                        <button type="button" id="generateMatchesBtn" class="btn-primary generate-matches-btn">Generate Matches</button>
                     </div>
+
+                    <div id="collegeMatchResults" class="college-match-results"></div>
                 </section>
 
                 <section class="content-panel" id="roadmap-content">

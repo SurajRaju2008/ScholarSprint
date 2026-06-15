@@ -133,6 +133,7 @@ body {
 
 #tab-home:checked      ~ .tab-labels label[for="tab-home"],
 #tab-profile:checked   ~ .tab-labels label[for="tab-profile"],
+#tab-college-match:checked ~ .tab-labels label[for="tab-college-match"],
 #tab-roadmap:checked   ~ .tab-labels label[for="tab-roadmap"],
 #tab-scholarships:checked ~ .tab-labels label[for="tab-scholarships"],
 #tab-settings:checked  ~ .tab-labels label[for="tab-settings"] {
@@ -143,6 +144,7 @@ body {
 
 #tab-home:checked      ~ .tab-labels label[for="tab-home"]::after,
 #tab-profile:checked   ~ .tab-labels label[for="tab-profile"]::after,
+#tab-college-match:checked ~ .tab-labels label[for="tab-college-match"]::after,
 #tab-roadmap:checked   ~ .tab-labels label[for="tab-roadmap"]::after,
 #tab-scholarships:checked ~ .tab-labels label[for="tab-scholarships"]::after,
 #tab-settings:checked  ~ .tab-labels label[for="tab-settings"]::after {
@@ -169,6 +171,7 @@ body {
 
 #tab-home:checked         ~ .tab-content #home-content,
 #tab-profile:checked      ~ .tab-content #profile-content,
+#tab-college-match:checked ~ .tab-content #college-match-content,
 #tab-roadmap:checked      ~ .tab-content #roadmap-content,
 #tab-scholarships:checked ~ .tab-content #scholarships-content,
 #tab-settings:checked     ~ .tab-content #settings-content {
@@ -184,6 +187,14 @@ h1 {
     margin-bottom: 24px;
     color: var(--text-primary);
     letter-spacing: -0.01em;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: -12px 0 24px;
+    max-width: 720px;
+    line-height: 1.6;
 }
 
 h2 {
@@ -749,6 +760,235 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
     transition: width 0.6s ease;
 }
 
+.btn-on-gradient {
+    background: white;
+    color: var(--primary);
+    margin-top: 4px;
+}
+
+.btn-on-gradient:hover {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--primary-dark);
+}
+
+.college-match-cta-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+/* ─── College Match ─────────────────────────────────────────────────────────── */
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(50, 110, 239, 0.1);
+}
+
+.generate-matches-btn {
+    width: 100%;
+    max-width: 280px;
+}
+
+.college-match-results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.match-loading {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-secondary);
+}
+
+.match-loading .loading-dots span {
+    background: var(--primary);
+}
+
+.match-empty,
+.match-error {
+    text-align: center;
+    padding: 28px 20px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+}
+
+.match-error {
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.match-error-sub {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: -8px;
+}
+
+.match-result-card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s, transform 0.2s;
+    animation: fadeIn 0.3s ease;
+}
+
+.match-result-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.match-result-header {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.likelihood-badge {
+    flex-shrink: 0;
+    min-width: 96px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.likelihood-badge.high {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: var(--success);
+}
+
+.likelihood-badge.medium {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: var(--warning);
+}
+
+.likelihood-badge.low {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--danger);
+}
+
+.likelihood-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.likelihood-badge.high .likelihood-value { color: var(--success); }
+.likelihood-badge.medium .likelihood-value { color: #b45309; }
+.likelihood-badge.low .likelihood-value { color: var(--danger); }
+
+.likelihood-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.match-result-title h3 {
+    font-size: 17px;
+    margin-bottom: 4px;
+}
+
+.match-result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.match-detail {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+}
+
+.match-detail-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+
+.match-detail-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.match-majors,
+.match-why {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.55;
+}
+
+.match-majors strong,
+.match-why strong {
+    color: var(--text-primary);
+}
+
+.match-why ul {
+    margin: 6px 0 0 18px;
+}
+
+.match-why li {
+    margin-bottom: 4px;
+}
+
 /* ─── Roadmap / Timeline ────────────────────────────────────────────────────── */
 
 .timeline { position: relative; }
@@ -1040,6 +1280,10 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
     .settings-grid { grid-template-columns: 1fr; }
 
     .college-stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .match-result-header { flex-direction: column; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .generate-matches-btn { max-width: none; }
 
     .timeline-item { gap: 14px; }
     .timeline-marker { width: 26px; height: 26px; }
