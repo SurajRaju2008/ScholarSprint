@@ -57,6 +57,10 @@ export async function getUserProfile() {
               activities: (data.activities || []).map((a) =>
                 a.role ? `${a.name} (${a.role})` : a.name,
               ),
+              activityDetails: data.activities || [],
+              leadershipRoles: data.extracurriculars?.leadershipRoles ?? null,
+              awards: data.extracurriculars?.awards ?? null,
+              volunteering: data.extracurriculars?.volunteering ?? null,
               intendedMajor: data.goals?.intendedMajor ?? null,
               alternativeMajors: data.goals?.alternativeMajors ?? null,
               careerGoals: data.goals?.careerGoals ?? null,
@@ -109,5 +113,8 @@ function getDemoProfile() {
       "Varsity Soccer",
       "National Honor Society",
     ],
+    leadershipRoles: "Robotics Club President, Soccer Team Captain",
+    awards: "National Honor Society, Regional Science Fair finalist",
+    volunteering: "Weekly tutoring at community center, 120+ hours",
   };
 }

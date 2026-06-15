@@ -822,6 +822,41 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
     max-width: 280px;
 }
 
+.match-results-header {
+    margin-bottom: 16px;
+}
+
+.match-results-header h2 {
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.match-results-note {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.match-factors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.match-factors span {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: var(--primary-muted);
+    color: var(--primary);
+    border: 1px solid rgba(50, 110, 239, 0.15);
+}
+
 .college-match-results {
     display: flex;
     flex-direction: column;
