@@ -53,6 +53,10 @@ export function initCollegeMatch(profile) {
   });
 }
 
+export function updateCollegeMatchProfile(profile) {
+  userProfile = profile;
+}
+
 export function navigateToTab(tabId) {
   const tab = document.getElementById(tabId);
   if (tab) tab.checked = true;
@@ -75,7 +79,19 @@ async function generateMatches() {
   if (!container || !btn) return;
 
   const filters = getFilterValues();
-  const homeState = (userProfile?.homeState || "IL").toUpperCase();
+  const homeState = userProfile?.homeState?.toUpperCase() || "";
+
+  if (
+    (filters.location === "in-state" || filters.location === "out-of-state") &&
+    !homeState
+  ) {
+    container.innerHTML = `
+      <p class="match-error">Set your <strong>home state</strong> in Settings before using in-state or out-of-state filters.</p>
+      <p class="match-error-sub">Go to the Settings tab, choose your state, and click Save Changes.</p>`;
+    btn.disabled = false;
+    btn.textContent = "Generate Matches";
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = "Generating…";

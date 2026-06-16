@@ -10,7 +10,6 @@ import {
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBmWOryytUc7lz3moV-6Ke9MzUvPdPWayI",
   authDomain: "scholar-sprint-13dcc.firebaseapp.com",
@@ -20,7 +19,6 @@ const firebaseConfig = {
   appId: "1:427960359444:web:9ebb5c9d25b34361916501",
 };
 
-// Initialize Firebase0
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -33,6 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("usernotfound");
     } else {
       currentUser = user;
+      const emailInput = document.getElementById("email");
+      if (emailInput && !emailInput.value) {
+        emailInput.value = user.email || "";
+      }
       console.log("Authenticated as:", user.uid);
     }
   });
@@ -51,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const activityNameInput = document.getElementById("activityName");
   const activityRoleInput = document.getElementById("activityRole");
   const activitiesList = document.getElementById("activitiesList");
+  const formError = document.getElementById("formError");
 
   let currentStep = 0;
   let activities = [];
@@ -77,7 +80,99 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.style.display = index === totalSteps - 1 ? "block" : "none";
 
     updateProgress();
+    clearFormError();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function markInvalid(field) {
+    if (field) field.classList.add("field-error");
+  }
+
+  function clearFieldErrors(section) {
+    section.querySelectorAll(".field-error").forEach((el) => {
+      el.classList.remove("field-error");
+    });
+    activitiesList?.classList.remove("field-error-block");
+  }
+
+  function showFormError(message) {
+    if (!formError) return;
+    formError.textContent = message;
+    formError.classList.toggle("visible", Boolean(message));
+  }
+
+  function clearFormError() {
+    showFormError("");
+  }
+
+  function validateSection(step) {
+    const section = sections[step];
+    if (!section) return false;
+
+    clearFieldErrors(section);
+    let valid = true;
+    const messages = [];
+
+    section.querySelectorAll("input[required], select[required], textarea[required]").forEach((field) => {
+      if (!field.value.trim()) {
+        markInvalid(field);
+        valid = false;
+      } else if (!field.checkValidity()) {
+        markInvalid(field);
+        valid = false;
+      }
+    });
+
+    if (step === 1) {
+      const gpa = Number(form.unweightedGPA.value);
+      const ap = Number(form.apCourses.value);
+      if (gpa < 0 || gpa > 4) {
+        markInvalid(form.unweightedGPA);
+        messages.push("Unweighted GPA must be between 0 and 4.");
+        valid = false;
+      }
+      if (ap < 0) {
+        markInvalid(form.apCourses);
+        messages.push("AP/Honors course count cannot be negative.");
+        valid = false;
+      }
+      if (form.satScore.value) {
+        const sat = Number(form.satScore.value);
+        if (sat < 400 || sat > 1600) {
+          markInvalid(form.satScore);
+          messages.push("SAT score must be between 400 and 1600.");
+          valid = false;
+        }
+      }
+      if (form.actScore.value) {
+        const act = Number(form.actScore.value);
+        if (act < 1 || act > 36) {
+          markInvalid(form.actScore);
+          messages.push("ACT score must be between 1 and 36.");
+          valid = false;
+        }
+      }
+    }
+
+    if (step === 2) {
+      if (activities.length === 0) {
+        activitiesList?.classList.add("field-error-block");
+        messages.push("Add at least one extracurricular activity before continuing.");
+        valid = false;
+      }
+    }
+
+    if (!valid) {
+      showFormError(
+        messages[0] || "Please complete all required fields correctly before continuing.",
+      );
+      const firstInvalid = section.querySelector(".field-error");
+      firstInvalid?.focus();
+    } else {
+      clearFormError();
+    }
+
+    return valid;
   }
 
   function addActivity() {
@@ -85,7 +180,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = activityRoleInput.value.trim();
 
     if (!name) {
-      alert("Please enter an activity name");
+      showFormError("Please enter an activity name before adding.");
+      activityNameInput.focus();
       return;
     }
 
@@ -93,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
     activityNameInput.value = "";
     activityRoleInput.value = "";
     renderActivities();
+    clearFormError();
   }
 
   function removeActivity(index) {
@@ -121,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <button type="button" class="activity-remove" onclick="removeActivityHandler(${index})">Remove</button>
       </div>
-    `
+    `,
       )
       .join("");
   }
@@ -131,6 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   nextBtn.addEventListener("click", () => {
+    if (!validateSection(currentStep)) return;
     if (currentStep < totalSteps - 1) {
       currentStep++;
       showSection(currentStep);
@@ -158,10 +256,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!validateSection(currentStep)) return;
+
     if (!currentUser) {
-      alert("notloggedin");
+      showFormError("You must be logged in to save your profile.");
       return;
     }
+
     const fd = new FormData(form);
 
     const profileData = {
@@ -202,11 +303,21 @@ document.addEventListener("DOMContentLoaded", () => {
       createdAt: serverTimestamp(),
     };
 
-    await setDoc(doc(db, "users", currentUser.uid), profileData, {
-      merge: true,
-    });
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving…";
 
-    successModal.classList.add("active");
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), profileData, {
+        merge: true,
+      });
+      successModal.classList.add("active");
+    } catch (err) {
+      console.error("Profile save error:", err);
+      showFormError("Could not save your profile. Please try again.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Complete Profile";
+    }
   });
 
   goToDashboardBtn.addEventListener("click", () => {

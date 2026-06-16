@@ -1,17 +1,24 @@
 // main.js
 import { getUserProfile } from "./firebase-config.js";
-import { initCollegeMatch } from "./college-match.js";
+import { initCollegeMatch, updateCollegeMatchProfile } from "./college-match.js";
+import { initSettings } from "./settings.js";
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 
 let userProfile = null;
 
-(async () => {
+async function refreshUserProfile() {
   userProfile = await getUserProfile();
   populateProfile(userProfile);
+  updateCollegeMatchProfile(userProfile);
+}
+
+(async () => {
+  await refreshUserProfile();
   initCollegeSearch();
   initStrategyAssistant();
   initCollegeMatch(userProfile);
+  initSettings(refreshUserProfile);
 })();
 
 // ─── Profile Population ───────────────────────────────────────────────────────

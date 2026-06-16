@@ -8,6 +8,8 @@ import {
   getFirestore,
   doc,
   getDoc,
+  setDoc,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -23,76 +25,111 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-/**
- * Fetches the current user's profile from Firestore.
- * Data is saved by the profile form at: users/{uid}  (top-level doc)
- * with nested fields: academics.unweightedGPA, goals.intendedMajor, etc.
- */
-export async function getUserProfile() {
+function waitForUser() {
   return new Promise((resolve) => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          // Read from users/{uid} — this is where your profile form saves to
-          const userRef = doc(db, "users", user.uid);
-          const snap = await getDoc(userRef);
-
-          if (snap.exists()) {
-            const data = snap.data();
-
-            // Map Firestore structure → flat profile object for main.js
-            const profile = {
-              uid: user.uid,
-              email: user.email,
-              name:
-                `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
-                user.displayName ||
-                "Student",
-              gpa: data.academics?.unweightedGPA ?? null,
-              weightedGpa: data.academics?.weightedGPA ?? null,
-              sat: data.academics?.satScore ?? null,
-              act: data.academics?.actScore ?? null,
-              apCourses: data.academics?.apCourses ?? null,
-              // activities is an array of {name, role} objects — flatten to strings
-              activities: (data.activities || []).map((a) =>
-                a.role ? `${a.name} (${a.role})` : a.name,
-              ),
-              activityDetails: data.activities || [],
-              leadershipRoles: data.extracurriculars?.leadershipRoles ?? null,
-              awards: data.extracurriculars?.awards ?? null,
-              volunteering: data.extracurriculars?.volunteering ?? null,
-              intendedMajor: data.goals?.intendedMajor ?? null,
-              alternativeMajors: data.goals?.alternativeMajors ?? null,
-              careerGoals: data.goals?.careerGoals ?? null,
-              preferredLocations: data.goals?.preferredLocations ?? null,
-              homeState: data.homeState ?? null,
-              graduationYear: data.graduationYear ?? null,
-              highSchool: data.highSchool ?? null,
-            };
-
-            resolve(profile);
-          } else {
-            // User is logged in but hasn't filled out profile form yet
-            console.warn(
-              "No profile found for user. Have they completed the profile form?",
-            );
-            resolve({
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || "Student",
-            });
-          }
-        } catch (err) {
-          console.error("Firestore read error:", err);
-          resolve(getDemoProfile());
-        }
-      } else {
-        // Not logged in — redirect to login or use demo
-        console.info("No user signed in. Using demo profile.");
-        resolve(getDemoProfile());
-      }
+    const unsub = onAuthStateChanged(auth, (user) => {
+      unsub();
+      resolve(user);
     });
   });
+}
+
+function mapFirestoreToProfile(user, data) {
+  return {
+    uid: user.uid,
+    email: user.email,
+    firstName: data.firstName ?? "",
+    lastName: data.lastName ?? "",
+    phone: data.phone ?? "",
+    name:
+      `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
+      user.displayName ||
+      "Student",
+    gpa: data.academics?.unweightedGPA ?? null,
+    weightedGpa: data.academics?.weightedGPA ?? null,
+    sat: data.academics?.satScore ?? null,
+    act: data.academics?.actScore ?? null,
+    apCourses: data.academics?.apCourses ?? null,
+    activities: (data.activities || []).map((a) =>
+      a.role ? `${a.name} (${a.role})` : a.name,
+    ),
+    activityDetails: data.activities || [],
+    leadershipRoles: data.extracurriculars?.leadershipRoles ?? null,
+    awards: data.extracurriculars?.awards ?? null,
+    volunteering: data.extracurriculars?.volunteering ?? null,
+    intendedMajor: data.goals?.intendedMajor ?? null,
+    alternativeMajors: data.goals?.alternativeMajors ?? null,
+    careerGoals: data.goals?.careerGoals ?? null,
+    preferredLocations: data.goals?.preferredLocations ?? null,
+    collegeType: data.goals?.collegeType ?? [],
+    financialNeed: data.goals?.financialNeed ?? null,
+    testScoreGoal: data.goals?.testScoreGoal ?? null,
+    homeState: data.homeState ?? null,
+    graduationYear: data.graduationYear ?? null,
+    highSchool: data.highSchool ?? null,
+  };
+}
+
+/**
+ * Fetches the current user's profile from Firestore.
+ */
+export async function getUserProfile() {
+  const user = await waitForUser();
+
+  if (user) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (snap.exists()) {
+        return mapFirestoreToProfile(user, snap.data());
+      }
+
+      console.warn(
+        "No profile found for user. Have they completed the profile form?",
+      );
+      return {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || "Student",
+      };
+    } catch (err) {
+      console.error("Firestore read error:", err);
+      return getDemoProfile();
+    }
+  }
+
+  console.info("No user signed in. Using demo profile.");
+  return getDemoProfile();
+}
+
+export async function fetchProfileDocument() {
+  const user = await waitForUser();
+  if (!user) return null;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) {
+    return { uid: user.uid, email: user.email };
+  }
+
+  return { uid: user.uid, email: user.email, ...snap.data() };
+}
+
+export async function saveUserProfile(profileData) {
+  const user = auth.currentUser || (await waitForUser());
+  if (!user) {
+    throw new Error("You must be signed in to save your profile.");
+  }
+
+  await setDoc(
+    doc(db, "users", user.uid),
+    {
+      ...profileData,
+      email: user.email,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 function getDemoProfile() {
