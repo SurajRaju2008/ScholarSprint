@@ -2,6 +2,8 @@
 import { getUserProfile } from "./firebase-config.js";
 import { initCollegeMatch, updateCollegeMatchProfile } from "./college-match.js";
 import { initSettings } from "./settings.js";
+import { initObjectives } from "./objectives.js";
+import { initRoadmap, updateRoadmapProfile } from "./roadmap.js";
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 
@@ -11,14 +13,17 @@ async function refreshUserProfile() {
   userProfile = await getUserProfile();
   populateProfile(userProfile);
   updateCollegeMatchProfile(userProfile);
+  updateRoadmapProfile(() => userProfile);
 }
 
 (async () => {
   await refreshUserProfile();
+  await initObjectives();
   initCollegeSearch();
   initStrategyAssistant();
   initCollegeMatch(userProfile);
   initSettings(refreshUserProfile);
+  initRoadmap(() => userProfile);
 })();
 
 // ─── Profile Population ───────────────────────────────────────────────────────

@@ -300,6 +300,40 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
 .objective-item:hover { border-color: var(--border-color); background: var(--bg-tertiary); }
 .objective-item.completed { opacity: 0.6; }
+.objective-item.completed .objective-text { text-decoration: line-through; }
+
+.objective-empty { list-style: none; padding: 8px 0; }
+
+.objective-check,
+.objective-remove {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.objective-check { display: flex; align-items: center; }
+
+.objective-text { flex: 1; }
+
+.objective-remove {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    color: var(--text-light);
+    font-size: 20px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.objective-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
 
 .checkbox {
     width: 22px;
@@ -1069,9 +1103,6 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
 .timeline-content h3 { color: var(--primary); margin-bottom: 10px; font-size: 14px; font-weight: 700; }
 
-.timeline-content ul { padding-left: 18px; margin: 8px 0; }
-.timeline-content li { margin-bottom: 6px; color: var(--text-secondary); font-size: 14px; }
-
 .status-badge {
     display: inline-block;
     margin-top: 10px;
@@ -1084,6 +1115,76 @@ h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .status-badge.completed { background: rgba(16,185,129,0.1); color: var(--success); }
 .status-badge.active    { background: var(--primary-muted); color: var(--primary); }
 .status-badge.upcoming  { background: var(--bg-tertiary); color: var(--text-secondary); }
+
+.roadmap-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.roadmap-card-header h2 { margin: 0; }
+
+.roadmap-status {
+    min-height: 20px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.roadmap-status-success { color: var(--success); }
+.roadmap-status-error { color: #ef4444; }
+
+.roadmap-empty .placeholder-text { margin: 0; }
+
+.roadmap-task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    list-style: none;
+}
+
+.timeline-content ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0;
+}
+
+.roadmap-task-text { flex: 1; color: var(--text-secondary); font-size: 14px; }
+
+.roadmap-add-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.roadmap-add-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+}
+
+.roadmap-add-btn.added,
+.roadmap-add-btn:disabled {
+    border-color: var(--success);
+    background: var(--success);
+    color: white;
+    cursor: default;
+}
 
 /* ─── Scholarships ──────────────────────────────────────────────────────────── */
 

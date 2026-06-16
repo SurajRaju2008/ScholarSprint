@@ -114,26 +114,9 @@
 
                     <div class="card">
                         <h2>Your Objectives</h2>
-                        <ul class="objective-list">
-                            <li class="objective-item completed">
-                                <span class="checkbox checked">✓</span>
-                                <span>Complete SAT/ACT Testing</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Finalize College List (12/15 schools selected)</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Draft Personal Statement</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Request Letters of Recommendation</span>
-                            </li>
-                            <li class="objective-item">
-                                <span class="checkbox"></span>
-                                <span>Submit Early Action Applications</span>
+                        <ul class="objective-list" id="objectiveList">
+                            <li class="objective-empty">
+                                <p class="placeholder-text">Loading objectives…</p>
                             </li>
                         </ul>
                     </div>
@@ -307,119 +290,16 @@
 
                 <section class="content-panel" id="roadmap-content">
                     <h1>College Application Roadmap</h1>
+                    <p class="page-subtitle">Generate a month-by-month plan tailored to your profile and where you are in the application process. Tap <strong>+</strong> on any task to add it to your objectives on Home.</p>
 
                     <div class="card">
-                        <h2>Your Timeline - Academic Year 2025-2026</h2>
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-marker completed"></div>
-                                <div class="timeline-content">
-                                    <h3>September 2025</h3>
-                                    <ul>
-                                        <li>Finalize college list</li>
-                                        <li>Begin Common App essay</li>
-                                        <li>Request teacher recommendations</li>
-                                    </ul>
-                                    <span class="status-badge completed">Completed</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker active"></div>
-                                <div class="timeline-content">
-                                    <h3>October 2025</h3>
-                                    <ul>
-                                        <li>Complete personal statement drafts</li>
-                                        <li>Take final SAT/ACT if needed</li>
-                                        <li>Begin supplemental essays</li>
-                                        <li>Attend college fairs</li>
-                                    </ul>
-                                    <span class="status-badge active">In Progress</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>November 2025</h3>
-                                    <ul>
-                                        <li>Submit Early Action/Early Decision applications</li>
-                                        <li>Complete all supplemental essays</li>
-                                        <li>Submit CSS Profile for financial aid</li>
-                                        <li>Continue working on Regular Decision apps</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>December 2025</h3>
-                                    <ul>
-                                        <li>Finalize Regular Decision applications</li>
-                                        <li>Complete FAFSA</li>
-                                        <li>Receive Early Action decisions</li>
-                                        <li>Schedule interviews if required</li>
-                                    </ul>
-                                    <span class=cd"status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>January 2026</h3>
-                                    <ul>
-                                        <li>Submit all Regular Decision applications</li>
-                                        <li>Send mid-year grade reports</li>
-                                        <li>Apply for local scholarships</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>February - March 2026</h3>
-                                    <ul>
-                                        <li>Continue scholarship applications</li>
-                                        <li>Visit accepted schools if possible</li>
-                                        <li>Maintain strong academic performance</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>April 2026</h3>
-                                    <ul>
-                                        <li>Receive Regular Decision notifications</li>
-                                        <li>Compare financial aid packages</li>
-                                        <li>Attend accepted student days</li>
-                                        <li>Make final college decision by May 1st</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
-
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h3>May - August 2026</h3>
-                                    <ul>
-                                        <li>Submit enrollment deposit</li>
-                                        <li>Complete housing applications</li>
-                                        <li>Register for orientation</li>
-                                        <li>Apply for summer programs</li>
-                                        <li>Prepare for college transition</li>
-                                    </ul>
-                                    <span class="status-badge upcoming">Upcoming</span>
-                                </div>
-                            </div>
+                        <div class="card-header roadmap-card-header">
+                            <h2 id="roadmapTimelineTitle">Your Timeline</h2>
+                            <button type="button" id="generateRoadmapBtn" class="btn-primary">Generate Roadmap</button>
+                        </div>
+                        <p id="roadmapStatus" class="roadmap-status" aria-live="polite"></p>
+                        <div id="roadmapTimeline" class="timeline roadmap-empty">
+                            <p class="placeholder-text">Click Generate Roadmap to build your personalized application timeline.</p>
                         </div>
                     </div>
                 </section>

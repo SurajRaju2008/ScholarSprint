@@ -132,6 +132,84 @@ export async function saveUserProfile(profileData) {
   );
 }
 
+export async function getUserObjectives() {
+  const user = await waitForUser();
+  if (!user) return [];
+
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) return [];
+    return normalizeObjectives(snap.data().objectives);
+  } catch (err) {
+    console.error("Failed to load objectives:", err);
+    return [];
+  }
+}
+
+export async function saveUserObjectives(objectives) {
+  const user = auth.currentUser || (await waitForUser());
+  if (!user) {
+    throw new Error("Sign in to save your objectives.");
+  }
+
+  await setDoc(
+    doc(db, "users", user.uid),
+    { objectives: normalizeObjectives(objectives) },
+    { merge: true },
+  );
+}
+
+export async function getSavedRoadmap() {
+  const user = await waitForUser();
+  if (!user) return null;
+
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) return null;
+    const roadmap = snap.data().roadmap;
+    return roadmap?.phases?.length ? roadmap : null;
+  } catch (err) {
+    console.error("Failed to load roadmap:", err);
+    return null;
+  }
+}
+
+export async function saveRoadmap(roadmap) {
+  const user = auth.currentUser || (await waitForUser());
+  if (!user) {
+    throw new Error("Sign in to save your roadmap.");
+  }
+
+  await setDoc(
+    doc(db, "users", user.uid),
+    {
+      roadmap: {
+        ...roadmap,
+        generatedAt: new Date().toISOString(),
+      },
+    },
+    { merge: true },
+  );
+}
+
+export function isSignedInUser() {
+  return Boolean(auth.currentUser);
+}
+
+function normalizeObjectives(raw) {
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .map((item, index) => ({
+      id: String(item.id || `obj-${index}-${Date.now()}`),
+      text: String(item.text || "").trim(),
+      completed: Boolean(item.completed),
+      roadmapItemId: item.roadmapItemId ? String(item.roadmapItemId) : null,
+      addedAt: item.addedAt || new Date().toISOString(),
+    }))
+    .filter((item) => item.text);
+}
+
 function getDemoProfile() {
   return {
     name: "Alex Johnson",
