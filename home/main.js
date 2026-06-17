@@ -4,6 +4,7 @@ import { initCollegeMatch, updateCollegeMatchProfile } from "./college-match.js"
 import { initSettings } from "./settings.js";
 import { initObjectives } from "./objectives.js";
 import { initRoadmap, updateRoadmapProfile } from "./roadmap.js";
+import { initScholarshipMatch, updateScholarshipProfile } from "./scholarship-match.js";
 
 // ─── Bootstrap ───────────────────────────────────────────────────────────────
 
@@ -14,6 +15,7 @@ async function refreshUserProfile() {
   populateProfile(userProfile);
   updateCollegeMatchProfile(userProfile);
   updateRoadmapProfile(() => userProfile);
+  updateScholarshipProfile(userProfile);
 }
 
 (async () => {
@@ -24,6 +26,7 @@ async function refreshUserProfile() {
   initCollegeMatch(userProfile);
   initSettings(refreshUserProfile);
   initRoadmap(() => userProfile);
+  initScholarshipMatch(userProfile);
 })();
 
 // ─── Profile Population ───────────────────────────────────────────────────────

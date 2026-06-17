@@ -36,6 +36,8 @@ const MAJOR_EC_KEYWORDS = {
 };
 
 let userProfile = null;
+let rankedPool = [];
+let shownCollegeIds = new Set();
 
 export function initCollegeMatch(profile) {
   userProfile = profile;
@@ -43,7 +45,11 @@ export function initCollegeMatch(profile) {
   const btn = document.getElementById("generateMatchesBtn");
   if (!btn) return;
 
-  btn.addEventListener("click", generateMatches);
+  btn.addEventListener("click", () => generateMatches(false));
+
+  document.getElementById("regenerateMatchesBtn")?.addEventListener("click", () =>
+    generateMatches(true),
+  );
 
   document.querySelectorAll("[data-goto-tab]").forEach((el) => {
     el.addEventListener("click", () => {
@@ -73,133 +79,187 @@ function getFilterValues() {
   };
 }
 
-async function generateMatches() {
+async function generateMatches(regenerate = false) {
   const container = document.getElementById("collegeMatchResults");
+  const summaryEl = document.getElementById("collegeMatchSummary");
   const btn = document.getElementById("generateMatchesBtn");
+  const regenBtn = document.getElementById("regenerateMatchesBtn");
   if (!container || !btn) return;
+
+  if (regenerate && rankedPool.length === 0) {
+    return generateMatches(false);
+  }
 
   const filters = getFilterValues();
   const homeState = userProfile?.homeState?.toUpperCase() || "";
 
   if (
+    !regenerate &&
     (filters.location === "in-state" || filters.location === "out-of-state") &&
     !homeState
   ) {
     container.innerHTML = `
       <p class="match-error">Set your <strong>home state</strong> in Settings before using in-state or out-of-state filters.</p>
       <p class="match-error-sub">Go to the Settings tab, choose your state, and click Save Changes.</p>`;
-    btn.disabled = false;
-    btn.textContent = "Generate Matches";
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = "Generating…";
-  container.innerHTML = `
-    <div class="match-loading">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <p>Analyzing your full profile and finding your strongest college matches…</p>
-    </div>`;
+  if (!regenerate) {
+    btn.disabled = true;
+    btn.textContent = "Generating…";
+    container.innerHTML = `
+      <div class="match-loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        <p>Analyzing your full profile and finding your strongest college matches…</p>
+      </div>`;
 
-  try {
-    const query = new URLSearchParams({
-      collegeType: filters.collegeType,
-      location: filters.location,
-      tuition: filters.tuition,
-      size: filters.size,
-      homeState,
-    });
-
-    const res = await fetch(`/api/college-match?${query}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
-
-    const profileStrength = analyzeProfileStrength(userProfile);
-
-    let schools = (data.results || [])
-      .filter((school) => applyClientFilters([school], filters, homeState).length > 0)
-      .map((school) => {
-        const breakdown = calculateHolisticAdmissionLikelihood(
-          school,
-          userProfile,
-          profileStrength,
-        );
-        const selectivityCategory = getSelectivityCategory(
-          school,
-          breakdown.likelihood,
-        );
-        const filterScore = scoreFilterAlignment(school, filters, homeState);
-        const popularity = calculateSchoolPopularity(school);
-        const matchQuality = Math.round(
-          breakdown.likelihood * 0.68 +
-            filterScore * 0.2 +
-            popularity * 0.12,
-        );
-
-        return {
-          ...school,
-          likelihood: breakdown.likelihood,
-          profileBreakdown: breakdown,
-          selectivityCategory,
-          matchQuality,
-          popularity,
-          matchReasons: buildMatchReasons(
-            school,
-            filters,
-            homeState,
-            breakdown,
-            profileStrength,
-          ),
-        };
-      })
-      .filter((school) =>
-        filters.selectivity === "any"
-          ? true
-          : school.selectivityCategory === filters.selectivity,
-      )
-      .filter((school) => school.matchQuality >= MIN_MATCH_QUALITY)
-      .sort((a, b) => {
-        if (b.matchQuality !== a.matchQuality) {
-          return b.matchQuality - a.matchQuality;
-        }
-        return b.popularity - a.popularity;
+    try {
+      const query = new URLSearchParams({
+        collegeType: filters.collegeType,
+        location: filters.location,
+        tuition: filters.tuition,
+        size: filters.size,
+        homeState,
       });
 
-    const topMatches = schools.slice(0, TOP_MATCH_COUNT);
+      const res = await fetch(`/api/college-match?${query}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
 
-    if (topMatches.length === 0) {
+      const profileStrength = analyzeProfileStrength(userProfile);
+
+      rankedPool = (data.results || [])
+        .filter((school) => applyClientFilters([school], filters, homeState).length > 0)
+        .map((school) => {
+          const breakdown = calculateHolisticAdmissionLikelihood(
+            school,
+            userProfile,
+            profileStrength,
+          );
+          const selectivityCategory = getSelectivityCategory(
+            school,
+            breakdown.likelihood,
+          );
+          const filterScore = scoreFilterAlignment(school, filters, homeState);
+          const popularity = calculateSchoolPopularity(school);
+          const matchQuality = Math.round(
+            breakdown.likelihood * 0.68 +
+              filterScore * 0.2 +
+              popularity * 0.12,
+          );
+
+          return {
+            ...school,
+            likelihood: breakdown.likelihood,
+            profileBreakdown: breakdown,
+            selectivityCategory,
+            matchQuality,
+            popularity,
+            matchReasons: buildMatchReasons(
+              school,
+              filters,
+              homeState,
+              breakdown,
+              profileStrength,
+            ),
+          };
+        })
+        .filter((school) =>
+          filters.selectivity === "any"
+            ? true
+            : school.selectivityCategory === filters.selectivity,
+        )
+        .filter((school) => school.matchQuality >= MIN_MATCH_QUALITY)
+        .sort((a, b) => {
+          if (b.matchQuality !== a.matchQuality) {
+            return b.matchQuality - a.matchQuality;
+          }
+          return b.popularity - a.popularity;
+        });
+
+      shownCollegeIds = new Set();
+
+      if (rankedPool.length === 0) {
+        if (summaryEl) summaryEl.innerHTML = "";
+        container.innerHTML = `
+          <p class="match-empty">
+            No strong matches found for this exact filter set. Try selecting <strong>Any</strong> for one or two filters to see more options.
+          </p>`;
+        if (regenBtn) regenBtn.style.display = "none";
+        return;
+      }
+    } catch (err) {
+      console.error("College match error:", err);
       container.innerHTML = `
-        <p class="match-empty">
-          No strong matches found for this exact filter set. Try selecting <strong>Any</strong> for one or two filters to see more options.
-        </p>`;
+        <p class="match-error">Could not load matches: ${escapeHtml(err.message)}</p>
+        <p class="match-error-sub">Make sure COLLEGE_SCORECARD_API_KEY is set in your Netlify environment variables.</p>`;
+      btn.disabled = false;
+      btn.textContent = "Generate Matches";
       return;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Generate Matches";
     }
-
-    const countLabel =
-      topMatches.length === 1
-        ? "1 Top Match"
-        : `${topMatches.length} Top Matches`;
-
-    const noteHtml =
-      topMatches.length < TOP_MATCH_COUNT
-        ? `<p class="match-results-note">Showing ${topMatches.length} high-quality match${topMatches.length === 1 ? "" : "es"} that meet your criteria. Loosen a filter to discover more.</p>`
-        : `<p class="match-results-note">Your ${TOP_MATCH_COUNT} strongest fits — ranked by full-profile admission likelihood, filter alignment, and school recognition.</p>`;
-
-    container.innerHTML = `
-      <div class="match-results-header">
-        <h2>${countLabel}</h2>
-        ${noteHtml}
-      </div>
-      ${topMatches.map(renderMatchCard).join("")}`;
-  } catch (err) {
-    console.error("College match error:", err);
-    container.innerHTML = `
-      <p class="match-error">Could not load matches: ${escapeHtml(err.message)}</p>
-      <p class="match-error-sub">Make sure COLLEGE_SCORECARD_API_KEY is set in your Netlify environment variables.</p>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Generate Matches";
   }
+
+  const available = rankedPool.filter((s) => !shownCollegeIds.has(String(s.id)));
+  const topMatches = available.slice(0, TOP_MATCH_COUNT);
+  topMatches.forEach((s) => shownCollegeIds.add(String(s.id)));
+
+  if (topMatches.length === 0) {
+    if (summaryEl) summaryEl.innerHTML = "";
+    container.innerHTML = `
+      <p class="match-empty">
+        No more strong matches with these filters. Try selecting <strong>Any</strong> for one or two filters, or click Generate Matches again.
+      </p>`;
+    if (regenBtn) regenBtn.style.display = "none";
+    return;
+  }
+
+  const strongCount = rankedPool.filter((s) => s.likelihood >= 65).length;
+  const targetCount = rankedPool.filter((s) => s.selectivityCategory === "Target/Match").length;
+
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div class="summary-stats-grid">
+        <div class="summary-stat-card">
+          <div class="summary-stat-value">${rankedPool.length}</div>
+          <div class="summary-stat-label">Matches Found</div>
+        </div>
+        <div class="summary-stat-card highlight">
+          <div class="summary-stat-value">${topMatches.length}</div>
+          <div class="summary-stat-label">Showing Now</div>
+        </div>
+        <div class="summary-stat-card">
+          <div class="summary-stat-value">${strongCount}</div>
+          <div class="summary-stat-label">Strong Matches</div>
+        </div>
+        <div class="summary-stat-card">
+          <div class="summary-stat-value">${targetCount}</div>
+          <div class="summary-stat-label">Target / Match</div>
+        </div>
+        <div class="summary-stat-card accent">
+          <div class="summary-stat-value">${Math.round(rankedPool.reduce((a, s) => a + s.likelihood, 0) / Math.max(rankedPool.length, 1))}%</div>
+          <div class="summary-stat-label">Avg. Likelihood</div>
+        </div>
+      </div>`;
+  }
+
+  if (regenBtn) {
+    regenBtn.style.display = available.length > topMatches.length ? "inline-flex" : "none";
+  }
+
+  const noteHtml =
+    topMatches.length < TOP_MATCH_COUNT
+      ? `<p class="match-results-note">Showing ${topMatches.length} high-quality match${topMatches.length === 1 ? "" : "es"} from ${rankedPool.length} total fits.</p>`
+      : `<p class="match-results-note">Top ${TOP_MATCH_COUNT} of ${rankedPool.length} matches — ranked by holistic likelihood and fit.</p>`;
+
+  container.innerHTML = `
+    <div class="match-results-header">
+      <h2>${topMatches.length} Top Match${topMatches.length === 1 ? "" : "es"}</h2>
+      ${noteHtml}
+    </div>
+    ${topMatches.map(renderMatchCard).join("")}`;
 }
 
 function applyClientFilters(schools, filters, homeState) {

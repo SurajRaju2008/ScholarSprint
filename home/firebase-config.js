@@ -228,6 +228,7 @@ function getDemoProfile() {
       "Varsity Soccer",
       "National Honor Society",
     ],
+    financialNeed: "some",
     leadershipRoles: "Robotics Club President, Soccer Team Captain",
     awards: "National Honor Society, Regional Science Fair finalist",
     volunteering: "Weekly tutoring at community center, 120+ hours",

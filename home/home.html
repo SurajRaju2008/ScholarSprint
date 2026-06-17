@@ -282,9 +282,13 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="button" id="generateMatchesBtn" class="btn-primary generate-matches-btn">Generate Matches</button>
+                        <div class="filter-actions">
+                            <button type="button" id="generateMatchesBtn" class="btn-primary">Generate Matches</button>
+                            <button type="button" id="regenerateMatchesBtn" class="btn-secondary" style="display:none;">Show Next 5 Matches</button>
+                        </div>
                     </div>
 
+                    <div id="collegeMatchSummary" class="summary-panel"></div>
                     <div id="collegeMatchResults" class="college-match-results"></div>
                 </section>
 
@@ -306,185 +310,108 @@
 
                 <section class="content-panel" id="scholarships-content">
                     <h1>Scholarship Opportunities</h1>
+                    <p class="page-subtitle">Find scholarships that match your academics, interests, background, location, and goals.</p>
+
+                    <div id="scholarshipSummary" class="summary-panel card"></div>
 
                     <div class="card">
-                        <div class="card-header">
-                            <h2>Matched Scholarships</h2>
-                            <span class="badge">24 Matches</span>
+                        <h2>Scholarship Filters</h2>
+                        <div class="filter-grid">
+                            <div class="filter-group">
+                                <label for="schFilterCategory">Scholarship category</label>
+                                <select id="schFilterCategory" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="Academic">Academic</option>
+                                    <option value="STEM">STEM</option>
+                                    <option value="Leadership">Leadership</option>
+                                    <option value="Community Service">Community Service</option>
+                                    <option value="Arts & Music">Arts &amp; Music</option>
+                                    <option value="Athletics">Athletics</option>
+                                    <option value="Need-Based">Need-Based</option>
+                                    <option value="Diversity">Diversity</option>
+                                    <option value="Career-Specific">Career-Specific</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterAmount">Award amount</label>
+                                <select id="schFilterAmount" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="under-1k">Under $1,000</option>
+                                    <option value="1-5k">$1,000–$5,000</option>
+                                    <option value="5-10k">$5,000–$10,000</option>
+                                    <option value="10k-plus">$10,000+</option>
+                                    <option value="full-tuition">Full tuition / major award</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterDeadline">Deadline</label>
+                                <select id="schFilterDeadline" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="week">Due this week</option>
+                                    <option value="month">Due this month</option>
+                                    <option value="3-months">Due in 3 months</option>
+                                    <option value="rolling">Rolling deadline</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterEffort">Application effort</label>
+                                <select id="schFilterEffort" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="low">Low effort</option>
+                                    <option value="medium">Medium effort</option>
+                                    <option value="high">High effort</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterEssay">Essay requirement</label>
+                                <select id="schFilterEssay" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="essay-required">Essay required</option>
+                                    <option value="no-essay">No essay</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterGrade">Eligibility level</label>
+                                <select id="schFilterGrade" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="Freshman">Freshman</option>
+                                    <option value="Sophomore">Sophomore</option>
+                                    <option value="Junior">Junior</option>
+                                    <option value="Senior">Senior</option>
+                                    <option value="College student">College student</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="schFilterLocation">Location</label>
+                                <select id="schFilterLocation" class="filter-select">
+                                    <option value="any">Any</option>
+                                    <option value="Local">Local</option>
+                                    <option value="State">State</option>
+                                    <option value="National">National</option>
+                                    <option value="School-specific">School-specific</option>
+                                </select>
+                            </div>
                         </div>
-                        <p class="subtitle">Based on your profile, academic achievements, and interests</p>
-
-                        <div class="scholarship-list">
-                            <div class="scholarship-card high-match">
-                                <div class="scholarship-header">
-                                    <h3>National Merit Scholarship</h3>
-                                    <span class="match-badge high">95% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$2,500</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">October 15, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">PSAT/NMSQT Score, Application Essay</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Academic</span>
-                                    <span class="tag">National</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card high-match">
-                                <div class="scholarship-header">
-                                    <h3>Coca-Cola Scholars Program</h3>
-                                    <span class="match-badge high">88% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$20,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">October 31, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">3.0 GPA, Leadership, Community Service</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Leadership</span>
-                                    <span class="tag">Service</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card medium-match">
-                                <div class="scholarship-header">
-                                    <h3>Dell Scholars Program</h3>
-                                    <span class="match-badge medium">72% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$20,000 + Tech Package</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">December 1, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">2.4 GPA, Financial Need, College Readiness</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Technology</span>
-                                    <span class="tag">Need-Based</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card medium-match">
-                                <div class="scholarship-header">
-                                    <h3>Gates Scholarship</h3>
-                                    <span class="match-badge medium">68% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">Full Cost of Attendance</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">September 15, 2025</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">3.3 GPA, Pell Grant Eligible, Leadership</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Full Ride</span>
-                                    <span class="tag">Competitive</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card">
-                                <div class="scholarship-header">
-                                    <h3>Local Community Foundation Scholarship</h3>
-                                    <span class="match-badge">85% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$1,000 - $5,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">March 1, 2026</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">Local Resident, Essay, Recommendations</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">Local</span>
-                                    <span class="tag">Community</span>
-                                </div>
-                            </div>
-
-                            <div class="scholarship-card">
-                                <div class="scholarship-header">
-                                    <h3>STEM Excellence Scholarship</h3>
-                                    <span class="match-badge">91% Match</span>
-                                </div>
-                                <div class="scholarship-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Amount:</span>
-                                        <span class="detail-value">$10,000</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Deadline:</span>
-                                        <span class="detail-value">January 15, 2026</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Requirements:</span>
-                                        <span class="detail-value">STEM Major, 3.5 GPA, Project Portfolio</span>
-                                    </div>
-                                </div>
-                                <div class="scholarship-tags">
-                                    <span class="tag">STEM</span>
-                                    <span class="tag">Academic</span>
-                                </div>
-                            </div>
+                        <label class="broad-match-toggle">
+                            <input type="checkbox" id="schShowBroad">
+                            Show broad matches (below 40% fit)
+                        </label>
+                        <div class="filter-actions">
+                            <button type="button" id="generateScholarshipsBtn" class="btn-primary">Generate Matches</button>
+                            <button type="button" id="regenerateScholarshipsBtn" class="btn-secondary" style="display:none;">Show Next 5 Scholarships</button>
+                            <button type="button" id="resetScholarshipFiltersBtn" class="btn-secondary">Reset Filters</button>
                         </div>
                     </div>
 
+                    <div id="scholarshipResults" class="scholarship-list"></div>
+
                     <div class="card">
-                        <h2>Application Tracker</h2>
+                        <h2>Saved Scholarships</h2>
+                        <p class="page-subtitle" style="margin-top:-8px;">Scholarships you save appear here for quick access.</p>
                         <div class="tracker-stats">
                             <div class="stat-card">
-                                <div class="stat-number">8</div>
-                                <div class="stat-label">Applied</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">12</div>
-                                <div class="stat-label">In Progress</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">4</div>
+                                <div class="stat-number" id="trackerSavedCount">0</div>
                                 <div class="stat-label">Saved</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-number">$45K</div>
-                                <div class="stat-label">Potential Value</div>
                             </div>
                         </div>
                     </div>
